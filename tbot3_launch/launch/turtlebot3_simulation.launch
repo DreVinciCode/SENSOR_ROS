@@ -1,0 +1,14 @@
+<launch>
+
+  <!-- Arguements -->
+    <arg name="map_file" default="$(find maps)/simulation/turtlebot_world.yaml"/>
+    <arg name="initial_pose_x" value="-2.0"/>
+    <arg name="initial_pose_y" value="-0.5"/>
+
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+  <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch"/>
+
+
+
+
+</launch>
