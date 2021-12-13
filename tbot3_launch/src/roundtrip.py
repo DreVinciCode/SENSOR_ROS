@@ -14,7 +14,6 @@ import rospy
 
 from geometry_msgs.msg import Pose, Point, PointStamped
 
-
 parser = argparse.ArgumentParser(description="A script to command the Turtlebot2 to make a round trip on selected points on a map.")
 parser.add_argument('--n', metavar='NumPoints', type=int , help="Specify the number of points (2-10) for the robot to travel towards.")
 args=parser.parse_args()
@@ -23,14 +22,24 @@ numPoints = 0
 minPoints = 2
 maxPoints = 10
 
+
+
 class GoToWayPoints:
+
     def __init__(self):
-        rospy.Subscriber("/point_coordinate", Point, self.coordinate_callback)
+        rospy.init_node("roundtrip", anonymous=False)
+        rospy.Subscriber("/clicked_point", PointStamped, self.point_callback)
+
+        self.pointArray[]
+        rospy.spin()
+
+
+    def point_callback(self, data):
+        self.pointArray.append(data)
 
 
 
-    def coordinate_callback(self, data):
-        print("coordinate_callback")
+
 
 def NumberOfWayPoints():            
     userInput = 2
@@ -52,16 +61,26 @@ def NumberOfWayPoints():
                 continue
 
 
+def WaypointList():
+
+    rospy.Subscriber("/clicked_point", PointStamped, point_callback)
+
+
+def point_callback(data):
+    print()
+
+
 if __name__ == "__main__":
     
 
     try:
-        test = NumberOfWayPoints()
+        waypointTotal = NumberOfWayPoints()
 
-        # rospy.init_node("roundtrip", anonymous=False)
+        waypointArray = WaypointList()
 
         # WayPointFollower = GoToWayPoints()
 
+        # while()
 
 
     except rospy.ROSInterruptException:
