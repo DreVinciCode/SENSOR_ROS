@@ -143,8 +143,6 @@ include_directories(
 add_executable(sensar_ros_laserscan src/sensar_ros_laserscan.cpp)
 target_link_libraries(sensar_ros_laserscan ${catkin_LIBRARIES})
 
-add_executable(sensar_ros_map src/sensar_ros_map.cpp)
-target_link_libraries(sensar_ros_map ${catkin_LIBRARIES})
 
 
 #####################################################################################
