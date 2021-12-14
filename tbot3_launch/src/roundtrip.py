@@ -59,24 +59,27 @@ def NumberOfWayPoints():
                 continue
 
 def point_callback(data):
-    print(data)
     waypointArray.append(data)
+    print(len(waypointArray))
+
+    if(len(waypointArray) == waypointTotal):
+        print("points reached!")
+        rospy.signal_shutdown("point reached")
+        return waypointArray
+    else:
+        print("Select " + str(waypointTotal - len(waypointArray)) + " more points.")
+
 
 def WaypointList():
-
-    print("Select " + waypointTotal + " points on the Rviz map using the Publish Point button.")
+    print("Select " + str(waypointTotal) + " points on the Rviz map using the Publish Point button.")
     rospy.init_node("WaypointList")
     rospy.Subscriber("/clicked_point", PointStamped, point_callback)
 
-    # while (len(waypointArray) < maxPoints):
-        # print(len(waypointArray))
-
-    if(len(waypointArray) == maxPoints):
-        return waypointArray
-    else:
-        print("not enough points")
-
     rospy.spin()
+
+def ContinueWithScript():
+
+    pass
 
 
 if __name__ == "__main__":
@@ -84,6 +87,8 @@ if __name__ == "__main__":
     try:
         waypointTotal = NumberOfWayPoints()
         waypointArray = WaypointList()
+
+        ContinueWithScript()
 
     except rospy.ROSInterruptException:
         rospy.loginfo("Quitting")
