@@ -1,0 +1,7 @@
+<launch>
+
+	<include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
+
+  	<node name="map" pkg="sensar_ros" type="sensar_ros_map" output="screen"/>
+ 
+</launch>
