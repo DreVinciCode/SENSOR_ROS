@@ -20,7 +20,7 @@ const std::string TOPIC_OUT = "/SENSAR/Map";
 const std::string FRAME_IN  = "map";
 const std::string FRAME_OUT = "base_link";
 
-const int FREQUENCY = 10;
+const int FREQUENCY = 1;
 
 geometry_msgs::TransformStamped transformToBase_link;
 nav_msgs::OccupancyGrid latestMsg;
@@ -63,8 +63,8 @@ int main (int argc, char **argv)
     ros::init(argc, argv, "sensar_ros_map");
     ros::NodeHandle n;
  
-    relativePub = n.advertise<nav_msgs::OccupancyGrid>(TOPIC_OUT, 5);
-    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, mapCallback);
+    relativePub = n.advertise<nav_msgs::OccupancyGrid>(TOPIC_OUT, 1);
+    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 1, mapCallback);
     
     tf2_ros::Buffer tBuffer;
     tf2_ros::TransformListener tf2_listener (tBuffer);
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
     {
         try
         {
-            transformToBase_link = tBuffer.lookupTransform(FRAME_OUT, FRAME_IN, ros::Time(0));
+            transformToBase_link = tBuffer.lookupTransform(FRAME_OUT, FRAME_IN, ros::Time(0), ros::Duration(1.0));
         }
         catch(tf2::TransformException e)
         {
