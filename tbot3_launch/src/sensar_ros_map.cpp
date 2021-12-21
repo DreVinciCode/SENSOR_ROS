@@ -31,13 +31,13 @@ ros::Publisher relativePub;
 nav_msgs::OccupancyGrid transformLocalization(nav_msgs::OccupancyGrid input)
 {
     nav_msgs::OccupancyGrid transformed = input; 
-    transformed.header.frame_id = FRAME_OUT;
+    // transformed.header.frame_id = FRAME_OUT;
 
-    geometry_msgs::PoseStamped stampedPose;
-    stampedPose.header = input.header;
-    stampedPose.pose = transformed.info.origin;
-    tf2::doTransform(stampedPose, stampedPose, transformToBase_link);
-    transformed.info.origin = stampedPose.pose;
+    // geometry_msgs::PoseStamped stampedPose;
+    // stampedPose.header = input.header;
+    // stampedPose.pose = transformed.info.origin;
+    // tf2::doTransform(stampedPose, stampedPose, transformToBase_link);
+    // transformed.info.origin = stampedPose.pose;
 
     return transformed;
 }

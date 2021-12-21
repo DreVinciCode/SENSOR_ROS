@@ -5,8 +5,10 @@ Andre Cleaver
 Tufts University
 *****************************/
 
-#include "ros/ros.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
+#include "ros/ros.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_ros/transform_listener.h"
 
 const std::string TOPIC_IN  = "/amcl_pose";
 const std::string TOPIC_OUT = "/SENSAR/amcl_pose";
@@ -18,8 +20,8 @@ ros::Publisher amcl_posePub;
 
 geometry_msgs::PoseWithCovarianceStamped poseTransformation(geometry_msgs::PoseWithCovarianceStamped input)
 {
-    geometry_msgs::PoseWithCovarianceStamped message = input; 
-    return message;
+    geometry_msgs::PoseWithCovarianceStamped transformed = input; 
+    return transformed;
 }
 
 void publishLatest()
@@ -50,6 +52,8 @@ int main (int argc, char **argv)
 
     while(ros::ok())
     {
+  
+
         ros::spinOnce();    
         publishLatest();
         rate.sleep();
