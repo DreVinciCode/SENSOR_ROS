@@ -32,12 +32,8 @@ void publishLatest()
 void poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& inMsg)
 {
     latestMsg = *inMsg;
+    publishLatest();
 
-    if (latestMsg.pose != previousMsg.pose)
-    {
-        previousMsg = latestMsg;
-        publishLatest();
-    }
 }
 
 int main (int argc, char **argv)
@@ -52,8 +48,6 @@ int main (int argc, char **argv)
 
     while(ros::ok())
     {
-  
-
         ros::spinOnce();    
         publishLatest();
         rate.sleep();
