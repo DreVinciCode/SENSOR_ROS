@@ -1,0 +1,20 @@
+/*****************************
+sensar_ros_particlecloud.cpp
+SENSAR
+Andre Cleaver
+Tufts University
+*****************************/
+
+#include "geometry_msgs/PoseArray.h"
+#include "ros/ros.h"
+#include <sstream>
+#include <string>
+
+const std::string TOPIC_IN  = "/particlecloud";
+const std::string TOPIC_OUT = "/SENSAR/particlecloud";
+const std::string FRAME_IN  = "map";
+const std::string FRAME_OUT = "base_link";
+
+using namespace std;
+
+const int FREQUENCY = 1;
