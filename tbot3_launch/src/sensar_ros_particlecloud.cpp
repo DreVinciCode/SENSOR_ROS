@@ -38,7 +38,6 @@ void cloudCallback(const geometry_msgs::PoseArray::ConstPtr& inMsg)
 {
     latestMsg = *inMsg;
     publishLatest();
-
 }
 
 int main (int argc, char **argv)

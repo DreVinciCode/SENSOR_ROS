@@ -1,8 +1,7 @@
 <launch>
-  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
   <node name="sensar_ros_map" pkg="sensar_ros" type="sensar_ros_map" respawn="true"/>
   <node name="sensar_ros_amcl_pose" pkg="sensar_ros" type="sensar_ros_amcl_pose" respawn="true"/>
-  <node name="sensar_ros_particlecloud pkg="sensar_ros type="sensar_ros_particlecloud respawn="true"/>
+  <node name="sensar_ros_particlecloud" pkg="sensar_ros" type="sensar_ros_particlecloud" respawn="true"/>
 
 </launch>
