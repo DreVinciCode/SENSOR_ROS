@@ -151,6 +151,11 @@ target_link_libraries(sensar_ros_map ${catkin_LIBRARIES})
 add_executable(sensar_ros_amcl_pose src/sensar_ros_amcl_pose.cpp)
 target_link_libraries(sensar_ros_amcl_pose ${catkin_LIBRARIES})
 
+add_executable(sensar_ros_particlecloud src/sensar_ros_particlecloud.cpp)
+target_link_libraries(sensar_ros_particlecloud ${catkin_LIBRARIES})
+
+
+
 
 #####################################################################################
 
