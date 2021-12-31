@@ -16,7 +16,7 @@ Tufts University
 using namespace std;
 
 const std::string TOPIC_IN  = "/map";
-const std::string TOPIC_OUT = "/SENSAR/Map";
+const std::string TOPIC_OUT = "/SENSAR/map";
 const std::string FRAME_IN  = "map";
 const std::string FRAME_OUT = "base_link";
 
