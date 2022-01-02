@@ -1,5 +1,5 @@
 /*****************************
-sensar_ros_map.cpp
+sensar_ros_costmap.cpp
 SENSAR
 Andre Cleaver
 Tufts University
@@ -15,9 +15,9 @@ Tufts University
 
 using namespace std;
 
-const std::string TOPIC_IN  = "/map";
-const std::string TOPIC_OUT = "/SENSAR/map";
-const std::string FRAME_IN  = "map";
+const std::string TOPIC_IN  = "/move_base/local_costmap/costmap";
+const std::string TOPIC_OUT = "/SENSAR/costmap";
+const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 
 const int FREQUENCY = 30;
@@ -60,7 +60,7 @@ void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& inMsg)
 
 int main (int argc, char **argv)
 {
-    ros::init(argc, argv, "sensar_ros_map");
+    ros::init(argc, argv, "sensar_ros_costmap");
     ros::NodeHandle n;
  
     relativePub = n.advertise<nav_msgs::OccupancyGrid>(TOPIC_OUT, 5);
@@ -89,4 +89,3 @@ int main (int argc, char **argv)
     
     return 0;
 }
-
