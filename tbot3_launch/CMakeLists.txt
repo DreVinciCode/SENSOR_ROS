@@ -157,6 +157,9 @@ target_link_libraries(sensar_ros_particlecloud ${catkin_LIBRARIES})
 add_executable(sensar_ros_costmap src/sensar_ros_costmap.cpp)
 target_link_libraries(sensar_ros_costmap ${catkin_LIBRARIES})
 
+add_executable(sensar_ros_path src/sensar_ros_path.cpp)
+target_link_libraries(sensar_ros_path ${catkin_LIBRARIES})
+
 
 #####################################################################################
 
