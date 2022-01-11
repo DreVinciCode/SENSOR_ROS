@@ -3,7 +3,6 @@
 	<include file="$(find tbot2_launch)/launch/tbot2_lidar.launch"/>
 	<include file="$(find tbot2_launch)/launch/amcl_navigation.launch"/>	
 	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
-	<include file="$(find sensar_ros)/launch/sensar.launch"/>
 
   	<node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" respawn="false" output="screen" args="/camera/rgb/image_raw">
 		<remap from="image" to="/camera/rgb/image_raw"/>
