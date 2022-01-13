@@ -17,7 +17,7 @@ using namespace std;
 
 const std::string TOPIC_IN  = "/scan";
 const std::string TOPIC_OUT = "/SENSAR/LaserScan";
-const int REDUCTION_FACTOR  = 2;
+const int REDUCTION_FACTOR  = 1;
 
 ros::Publisher filteredPub;
 
@@ -29,7 +29,7 @@ sensor_msgs::LaserScan filterScan(sensor_msgs::LaserScan scanData)
     {
         if (std::isnan(filtered.ranges[i]) || std::isinf(filtered.ranges[i]))
         {
-            filtered.ranges[i] = -1;
+            filtered.ranges[i] = 0;
         }
     }
 
