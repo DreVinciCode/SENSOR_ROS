@@ -160,6 +160,8 @@ target_link_libraries(sensar_ros_costmap ${catkin_LIBRARIES})
 add_executable(sensar_ros_path src/sensar_ros_path.cpp)
 target_link_libraries(sensar_ros_path ${catkin_LIBRARIES})
 
+add_executable(sensar_ros_pointcloud src/sensar_ros_pointcloud.cpp)
+target_link_libraries(sensar_ros_pointcloud ${catkin_LIBRARIES})
 
 #####################################################################################
 

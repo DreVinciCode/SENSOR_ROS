@@ -22,7 +22,7 @@ const std::string TOPIC_OUT = "/SENSAR/costmap";
 const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 
-const int FREQUENCY = 2;
+const int FREQUENCY = 1.8;
 
 geometry_msgs::TransformStamped transformToBase_link;
 nav_msgs::OccupancyGrid latestMsg;
