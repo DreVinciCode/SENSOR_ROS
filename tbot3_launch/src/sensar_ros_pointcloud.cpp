@@ -24,7 +24,19 @@ const int FREQUENCY = 1.8;
 sensor_msgs::PointCloud2 latestMsg;
 geometry_msgs::TransformStamped transformToBase_link;
 
+ros::Publisher relativePub;
 
+sensor_msgs::PointCloud2 transformLocalization(sensor_msgs::PointCloud2 input)
+{
+    sensor_msgs::PointCloud2 transformed = input; 
+
+    return transformed;
+}
+
+void publishLatest()
+{
+    relativePub.publish(transformLocalization(latestMsg));
+}
 
 void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
@@ -36,6 +48,7 @@ int main (int argc, char **argv)
     ros::init(argc, argv, "sensar_ros_pointcloud");
     ros::NodeHandle n;
  
+    relativePub = n.advertise<sensor_msgs::PointCloud2>(TOPIC_OUT, 5);
     ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, pointCloudCallback);
     
     tf2_ros::Buffer tBuffer;
@@ -55,7 +68,7 @@ int main (int argc, char **argv)
         }
 
         ros::spinOnce();    
-        //publishLatest();
+        publishLatest();
         rate.sleep();
     }
     
