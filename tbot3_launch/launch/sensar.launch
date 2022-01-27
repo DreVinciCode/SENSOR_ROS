@@ -11,5 +11,6 @@
   <node name="sensar_ros_particlecloud" pkg="sensar_ros" type="sensar_ros_particlecloud" respawn="true"/>
   <node name="sensar_ros_costmap" pkg="sensar_ros" type="sensar_ros_costmap" respawn="true"/>
   <node name="sensar_ros_path" pkg="sensar_ros" type="sensar_ros_path" respawn="true"/>
+  <node name="sensar_ros_footprint" pkg="sensar_ros" type="sensar_ros_footprint" respawn="true"/>
 
 </launch>

@@ -23,7 +23,7 @@ const std::string TOPIC_OUT = "/SENSAR/footprint";
 const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 
-const int FREQUENCY = 30;
+const int FREQUENCY = 1.8;
 
 geometry_msgs::TransformStamped transformToBase_link;
 geometry_msgs::PolygonStamped latestMsg;
@@ -61,7 +61,6 @@ geometry_msgs::PolygonStamped transformLocalization(geometry_msgs::PolygonStampe
 		tf2::doTransform(point, point, transformToBase_link);
 		transformed.polygon.points[i] = toPoint32(point.pose.position);
     }
-
 
     return transformed;
 }
