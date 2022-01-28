@@ -69,7 +69,7 @@ void publishLatest()
     relativePub.publish(transformLocalization(latestMsg));
 }
 
-void footprintCallback(const geometry_msgs::PolygonStamped::ConstPtr& inMsg)
+void polygonCallback(const geometry_msgs::PolygonStamped::ConstPtr& inMsg)
 {
     latestMsg = *inMsg;
 }
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
     ros::NodeHandle n;
  
     relativePub = n.advertise<geometry_msgs::PolygonStamped>(TOPIC_OUT, 5);
-    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, footprintCallback);
+    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, polygonCallback);
     
     tf2_ros::Buffer tBuffer;
     tf2_ros::TransformListener tf2_listener (tBuffer);
