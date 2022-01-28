@@ -25,18 +25,17 @@ geometry_msgs::PointStamped latestMsg;
 geometry_msgs::PointStamped previousMsg;
 ros::Publisher relativePub;
 
+const int FREQUENCY = 1.8;
+
 geometry_msgs::PointStamped transformLocalization(geometry_msgs::PointStamped input)
 {
     geometry_msgs::PointStamped transformed = input; 
     transformed.header.frame_id = FRAME_OUT;
 
-	for(int i = 0; i < transformed.polygon.points.size(); i++)
-    {
-		geometry_msgs::PoseStamped point;
-		point.pose.position = transformed.point;
-		tf2::doTransform(point, point, transformToBase_link);
-		transformed.point = point.pose.position;
-    }
+	geometry_msgs::PoseStamped point;
+	point.pose.position = transformed.point;
+	tf2::doTransform(point, point, transformToBase_link);
+	transformed.point = point.pose.position;
 
     return transformed;
 }
@@ -46,14 +45,14 @@ void publishLatest()
     relativePub.publish(transformLocalization(latestMsg));
 }
 
-void pointCallback(const geometry_msgs::PolygonStamped::ConstPtr& inMsg)
+void pointCallback(const geometry_msgs::PointStamped::ConstPtr& inMsg)
 {
     latestMsg = *inMsg;
 }
 
 int main (int argc, char **argv)
 {
-    ros::init(argc, argv, "sensar_ros_footprint");
+    ros::init(argc, argv, "sensar_ros_point");
     ros::NodeHandle n;
  
     relativePub = n.advertise<geometry_msgs::PointStamped>(TOPIC_OUT, 5);
@@ -63,9 +62,14 @@ int main (int argc, char **argv)
     tf2_ros::TransformListener tf2_listener (tBuffer);
 
     ros::Rate rate(FREQUENCY);
-     {
-            transformToBase_link = tBuffer.lookupTransform(FRAME_OUT, FRAME_IN, ros::Time(0));
-        }
+    
+    while(ros::ok())
+    {
+		try
+		{
+			transformToBase_link = tBuffer.lookupTransform(FRAME_OUT, FRAME_IN, ros::Time(0));
+		}
+		
         catch(tf2::TransformException e)
         {
             ROS_INFO("%s \n", e.what());

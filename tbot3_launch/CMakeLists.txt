@@ -166,6 +166,9 @@ target_link_libraries(sensar_ros_pointcloud ${catkin_LIBRARIES})
 add_executable(sensar_ros_polygon src/sensar_ros_polygon.cpp)
 target_link_libraries(sensar_ros_polygon ${catkin_LIBRARIES})
 
+add_executable(sensar_ros_point src/sensar_ros_point.cpp)
+target_link_libraries(sensar_ros_point ${catkin_LIBRARIES})
+
 #####################################################################################
 
 
