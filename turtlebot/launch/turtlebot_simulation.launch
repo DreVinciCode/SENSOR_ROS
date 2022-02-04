@@ -1,12 +1,13 @@
 <launch>
     <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch"/>
-    <include file="$(find turtlebot_rviz_launchers)/launch/view_navigation.launch"/>
-
+    <!-- <include file="$(find turtlebot_rviz_launchers)/launch/view_navigation.launch"/> -->
+	
     <include file="$(find turtlebot_gazebo)/launch/amcl_demo.launch"/>
     <arg name="map_file" default="$(find tufts_joyce)/maps/4th_floor/lab_474.yaml"/>
 
     <include file="$(find tbot2_launch)/launch/leg_detector.launch"/>
-
     <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+    
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/Default.rviz"/>
 
 </launch>
