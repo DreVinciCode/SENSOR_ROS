@@ -18,7 +18,7 @@ Tufts University
 using namespace std;
 
 const std::string TOPIC_IN  = "/move_base/local_costmap/footprint";
-const std::string TOPIC_OUT = "/SENSAR/polygon";
+const std::string TOPIC_OUT = "/SENSAR/footprint";
 const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 

@@ -14,5 +14,7 @@
   <node name="sensar_ros_polygon" pkg="sensar_ros" type="sensar_ros_polygon" respawn="true"/>
   <node name="sensar_ros_point" pkg="sensar_ros" type="sensar_ros_point" respawn="true"/>
   <node name="sensar_ros_safetyzone" pkg="sensar_ros" type="sensar_ros_safetyzone" respawn="true"/>
+  <node name="sensar_ros_legdetector" pkg="sensar_ros" type="sensar_ros_legdetector" respawn="true"/>
+
 
 </launch>

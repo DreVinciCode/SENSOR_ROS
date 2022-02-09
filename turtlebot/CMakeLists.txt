@@ -172,6 +172,10 @@ target_link_libraries(sensar_ros_point ${catkin_LIBRARIES})
 add_executable(sensar_ros_safetyzone src/sensar_ros_safetyzone.cpp)
 target_link_libraries(sensar_ros_safetyzone ${catkin_LIBRARIES})
 
+add_executable(sensar_ros_legdetector src/sensar_ros_legdetector.cpp)
+target_link_libraries(sensar_ros_legdetector ${catkin_LIBRARIES})
+
+
 #####################################################################################
 
 
