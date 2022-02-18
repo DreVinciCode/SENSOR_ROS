@@ -30,9 +30,9 @@ class randomtargets:
         self.targets = generate_pointstamped()
     def next_target():
         i = 0
-        while i < len(self.targets):
+        for point in self.targets:
             ptstmp = PointStamped()
-            ptstmp.Point = self.targets[i]
+            ptstmp.Point = point
             ptstmp.Header = Header
             yield ptstmp
         yield ptstmp
