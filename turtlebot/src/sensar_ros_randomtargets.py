@@ -9,7 +9,7 @@ Tufts University
 
 import rospy
 from geometry_msgs.msg import Point, PointStamped
-frpm std_msgs.msg import Header
+from std_msgs.msg import Header
 
 def generate_pointstamped():
     return (Point(0, 0, 0),
