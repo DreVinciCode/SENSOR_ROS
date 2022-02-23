@@ -20,6 +20,8 @@ const std::string TOPIC_OUT = "/SENSAR/leg_detector_marker";
 const std::string FRAME_IN  = "map";
 const std::string FRAME_OUT = "base_link";
 
+std::string rosparam = "/SENSAR/leg_threshold";
+
 people_msgs::PositionMeasurementArray latestMsg;
 ros::Publisher vis_pub;
 
@@ -71,7 +73,10 @@ people_msgs::PositionMeasurementArray filteredArray(people_msgs::PositionMeasure
     {
 		float rel = input.people[i].reliability;
 		
-		if(rel > 1.3)
+		double threshold;
+		ros::param::get(rosparam, threshold);
+		
+		if(rel > threshold)
 		{
 			filteredList.people.push_back(input.people[i]);
 		}	
@@ -89,6 +94,8 @@ int main (int argc, char **argv)
 {
     ros::init(argc, argv, "sensar_ros_legdetector");
     ros::NodeHandle n;
+    
+	n.setParam(rosparam, 4.2);
  
     vis_pub = n.advertise<visualization_msgs::MarkerArray>(TOPIC_OUT, 0);
     ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, legdetectorCallback);
