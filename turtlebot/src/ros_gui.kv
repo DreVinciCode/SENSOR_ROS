@@ -1,8 +1,22 @@
 FloatLayout:
+
+	MDSlider:
+		min: 0
+		max: 100
+		value: 50 
+		hint: True
+		on_touch_up: app.slider_function(self.value)
+
+	MDLabel:
+		id: person_threshold_text
+		text: "Person_Threshold_Value:"
+	    pos_hint: {"center_x": 0.8, "center_y": 0.25}
+		size_hint: 1,1
 	
 	MDLabel:
-		text: "ARViz GUI"
-		halign: "center"
+		id: person_threshold_value_text
+		text: "Value"
+	    pos_hint: {"center_x": 1.1, "center_y": 0.25}
 		size_hint: 1,1
 
 	MDRaisedButton:
