@@ -1,0 +1,3 @@
+[submodule "turtlebot/KivyMD"]
+	path = turtlebot/KivyMD
+	url = https://github.com/kivymd/KivyMD.git
