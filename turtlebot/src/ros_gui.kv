@@ -1,0 +1,18 @@
+FloatLayout:
+	
+	MDLabel:
+		text: "ARViz GUI"
+		halign: "center"
+		size_hint: 1,1
+
+	MDRaisedButton:
+	    text: "Increase"
+	    md_bg_color: 0, 0, 1, 0.5
+	    pos_hint: {"center_x": 0.2, "center_y": 0.25}
+	    on_press: app.inc_person_threshold(*args)
+
+	MDRaisedButton:
+	    text: "Decrease"
+	    md_bg_color: 0, 0, 1, 0.5
+	    pos_hint: {"center_x": 0.2 * 4, "center_y": 0.25}
+	    on_press: app.dec_person_threshold(*args)
