@@ -15,7 +15,7 @@ Tufts University
 
 using namespace std;
 
-const std::string TOPIC_IN  = "/clicked_point";
+const std::string TOPIC_IN  = "/SENSAR/random_point";
 const std::string TOPIC_OUT = "/SENSAR/point";
 const std::string FRAME_IN  = "map";
 const std::string FRAME_OUT = "base_link";
@@ -26,6 +26,7 @@ geometry_msgs::PointStamped previousMsg;
 ros::Publisher relativePub;
 
 const int FREQUENCY = 1.8;
+bool receivedMessage = false;
 
 geometry_msgs::PointStamped transformLocalization(geometry_msgs::PointStamped input)
 {
@@ -43,11 +44,14 @@ geometry_msgs::PointStamped transformLocalization(geometry_msgs::PointStamped in
 void publishLatest()
 {
     relativePub.publish(transformLocalization(latestMsg));
+    receivedMessage = false;
 }
 
 void pointCallback(const geometry_msgs::PointStamped::ConstPtr& inMsg)
 {
     latestMsg = *inMsg;
+    receivedMessage = true;
+
 }
 
 int main (int argc, char **argv)
@@ -75,8 +79,13 @@ int main (int argc, char **argv)
             ROS_INFO("%s \n", e.what());
         }
 
-        ros::spinOnce();    
-        publishLatest();
+        ros::spinOnce(); 
+
+        if(receivedMessage)
+        {
+            publishLatest();
+        }   
+
         rate.sleep();
     }
     
