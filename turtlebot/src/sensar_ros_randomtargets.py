@@ -1,4 +1,4 @@
-#! usr/bin/python
+#!/usr/bin/env python
 
 '''
 sensar_ros_randomtargets.py
@@ -12,29 +12,38 @@ from geometry_msgs.msg import Point, PointStamped
 from std_msgs.msg import Header
 
 def generate_pointstamped():
-    return (Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0),
-            Point(0, 0, 0), # Last one is center (origin) of the room
+    return (Point(5.0, 5.0, 5.0),
+    		Point(3.3, 3.3, 3.3),
+    		Point(9.0, 9.0, 9.0),
+ 			# set points from remapped room
 )
 
 class randomtargets:
     def __init__(self):
-        self.pub = rospy.Publisher("/SENSAR/point", PointStamped, 5)
+        self.pub = rospy.Publisher("/SENSAR/random_point", PointStamped, queue_size = 1)
         self.targets = generate_pointstamped()
-    def next_target():
-        i = 0
+
+    def next_target(self):
+
         for point in self.targets:
+            raw_input("press enter to start...")			
             ptstmp = PointStamped()
-            ptstmp.Point = point
-            ptstmp.Header = Header
-            yield ptstmp
-        yield ptstmp
-    def publish_latest():
-        self.pub.publish(self.next_target)
+            ptstmp.point = point
+            h = Header()
+            h.stamp = rospy.Time.now()
+            h.frame_id = "map"
+            ptstmp.header = h
+
+            print(ptstmp)
+            self.pub.publish(ptstmp)           
+
+
+if __name__  == "__main__":
+
+	try:
+		rospy.init_node('random_points', anonymous=False)
+		random_points = randomtargets()
+		random_points.next_target()
+
+	except rospy.ROSInterruptException:
+		rospy.loginfo("Quiting")
