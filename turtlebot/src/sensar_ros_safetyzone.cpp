@@ -9,6 +9,7 @@ Tufts University
 #include "geometry_msgs/PolygonStamped.h"
 #include "geometry_msgs/Point32.h"
 #include "ros/ros.h"
+#include "std_msgs/Float32.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "tf2_ros/transform_listener.h"
 #include <cmath>
@@ -21,6 +22,7 @@ using std::vector;
 
 const std::string TOPIC_IN  = "/move_base/local_costmap/footprint";
 const std::string TOPIC_OUT = "/SENSAR/safetyzone";
+const std::string TOPIC_SCALEFACTOR = "/SENSAR/safetyzone_scale";
 const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 
@@ -30,6 +32,7 @@ geometry_msgs::TransformStamped transformToBase_link;
 geometry_msgs::PolygonStamped latestMsg;
 geometry_msgs::PolygonStamped previousMsg;
 ros::Publisher relativePub;
+std_msgs::Float32 safetyZone_scaleFactor;
 
 geometry_msgs::Point toPoint(geometry_msgs::Point32 pt)
 {
@@ -67,7 +70,7 @@ geometry_msgs::PolygonStamped transformLocalization(geometry_msgs::PolygonStampe
 
 geometry_msgs::PolygonStamped scalePolygon(geometry_msgs::PolygonStamped input)
 {
-	float scaleFactor = 2;
+	float scaleFactor = safetyZone_scaleFactor.data;
 	float x_displacement = 0;
 	float y_displacement = 0;
 	float z_displacement = 0;
@@ -95,6 +98,11 @@ void polygonCallback(const geometry_msgs::PolygonStamped::ConstPtr& inMsg)
     latestMsg = *inMsg;
 }
 
+void scaleFactor_Callback(const std_msgs::Float32::ConstPtr& inMsg)
+{
+    safetyZone_scaleFactor = *inMsg;
+}
+
 int main (int argc, char **argv)
 {
     ros::init(argc, argv, "sensar_ros_safetyzone");
@@ -102,11 +110,14 @@ int main (int argc, char **argv)
  
     relativePub = n.advertise<geometry_msgs::PolygonStamped>(TOPIC_OUT, 5);
     ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, polygonCallback);
+    ros::Subscriber scaleSub = n.subscribe(TOPIC_SCALEFACTOR, 1, scaleFactor_Callback);
     
     tf2_ros::Buffer tBuffer;
     tf2_ros::TransformListener tf2_listener (tBuffer);
 
     ros::Rate rate(FREQUENCY);
+
+    safetyZone_scaleFactor.data = 1.0f;
 
     while(ros::ok())
     {
