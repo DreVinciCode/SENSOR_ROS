@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 '''
-sensar_ros_randomtargets.py
+scalesafetyzone.py
 SENSAR
-Darren Tang
+Andre Cleaver
 Tufts University
 '''
 
