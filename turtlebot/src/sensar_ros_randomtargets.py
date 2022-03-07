@@ -26,7 +26,7 @@ class randomtargets:
     def next_target(self):
 
         for point in self.targets:
-            raw_input("press enter to start...")			
+            input("press enter to start...")			
             ptstmp = PointStamped()
             ptstmp.point = point
             h = Header()
