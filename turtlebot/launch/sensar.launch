@@ -17,4 +17,5 @@
   <node name="sensar_ros_legdetector" pkg="sensar_ros" type="sensar_ros_legdetector" respawn="true"/>
   <node name="sensar_ros_persondetector" pkg="sensar_ros" type="sensar_ros_persondetector" respawn="true"/>
 
+
 </launch>

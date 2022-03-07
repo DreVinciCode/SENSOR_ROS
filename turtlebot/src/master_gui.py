@@ -9,7 +9,7 @@ from kivy.lang import Builder
 from kivymd.uix.button import MDRectangleFlatButton
 
 
-class KivyMD_GUI(MDApp):
+class ARViz_GUI(MDApp):
 	
 	def __init_(self, **kwargs):
 		super().__init__(**kwargs)
@@ -44,8 +44,8 @@ class KivyMD_GUI(MDApp):
 
 if __name__ == "__main__":
 	
-	pub = rospy.Publisher('/SENSAR/slider_value', Float64, queue_size=2)
+	pub = rospy.Publisher('/SENSAR/slider_value', Float64, queue_size=1)
 
 	rospy.init_node('kivymd_gui', anonymous=True)	
 
-	KivyMD_GUI().run()
+	ARViz_GUI().run()

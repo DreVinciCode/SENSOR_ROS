@@ -1,11 +1,19 @@
 FloatLayout:
 
+	MDLabel:
+		text: 'Value: %s' % int(_slider.value)
+		halign: "center"
+		size_hint: 0.25, 0.25
+	    pos_hint: {"center_x": 0.5, "center_y": 0.7}
+
 	MDSlider:
+		id: _slider
 		min: 0
 		max: 100
 		value: 50 
 		hint: True
 		on_touch_up: app.slider_function(self.value)
+		# on_touch_move: for continous publishing
 
 	MDLabel:
 		id: person_threshold_text
