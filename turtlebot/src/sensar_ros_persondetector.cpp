@@ -25,7 +25,7 @@ std::string rosparam = "/SENSAR/person_threshold";
 people_msgs::PositionMeasurementArray latestMsg;
 ros::Publisher vis_pub;
 
-const int FREQUENCY = 30;
+const int FREQUENCY = 50;
 
 void publishLatest()
 {
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
     ros::init(argc, argv, "sensar_ros_persondetector");
     ros::NodeHandle n;
     
-    n.setParam(rosparam, 1.0);
+    n.setParam(rosparam, -1.0);
     
     vis_pub = n.advertise<visualization_msgs::MarkerArray>(TOPIC_OUT, 5);
     ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, legdetectorCallback);
