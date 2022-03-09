@@ -25,7 +25,7 @@ std::string rosparam = "/SENSAR/person_threshold";
 people_msgs::PositionMeasurementArray latestMsg;
 ros::Publisher vis_pub;
 
-const int FREQUENCY = 50;
+const int FREQUENCY = 10;
 
 void publishLatest()
 {

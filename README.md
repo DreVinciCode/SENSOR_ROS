@@ -16,3 +16,6 @@ Robotic data that SENSAR can currently display include:
 - Loaded Map of Environment
 - Diagnostic Information
 
+
+Adding future arduino components; install with the following:
+$ sudo apt-get install ros-kinetic-rosserial-arduino ros-kinetic-rosserial ros-kinetic-rosserial-embeddedlinux ros-kinetic-rosserial-windows ros-kinetic-rosserial-server ros-kinetic-rosserial-python
