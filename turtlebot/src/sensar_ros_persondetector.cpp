@@ -58,6 +58,8 @@ void publishLatest()
 		marker.color.r = 0.0;
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
+
+		marker.text = std::to_string(leg.reliability);
 		
 		markerArray.markers.push_back(marker);
 	}
