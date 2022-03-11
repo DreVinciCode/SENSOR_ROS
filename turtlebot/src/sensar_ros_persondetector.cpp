@@ -59,7 +59,10 @@ void publishLatest()
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
 
-		marker.text = std::to_string(leg.reliability);
+		std::ostringstream stm;
+		stm << leg.reliability;
+		//marker.text = std::to_string(leg.reliability);
+		marker.text = stm.str();
 		
 		markerArray.markers.push_back(marker);
 	}
