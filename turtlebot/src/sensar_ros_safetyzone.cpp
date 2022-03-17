@@ -26,7 +26,7 @@ const std::string TOPIC_SCALEFACTOR = "/SENSAR/safetyzone_scale";
 const std::string FRAME_IN  = "odom";
 const std::string FRAME_OUT = "base_link";
 
-const int FREQUENCY = 30;
+const int FREQUENCY = 2;
 
 geometry_msgs::TransformStamped transformToBase_link;
 geometry_msgs::PolygonStamped latestMsg;
@@ -87,7 +87,6 @@ geometry_msgs::PolygonStamped scalePolygon(geometry_msgs::PolygonStamped input)
 	return output;
 }
 
-
 void publishLatest()
 {
     relativePub.publish(scalePolygon(transformLocalization(latestMsg)));
@@ -108,8 +107,8 @@ int main (int argc, char **argv)
     ros::init(argc, argv, "sensar_ros_safetyzone");
     ros::NodeHandle n;
  
-    relativePub = n.advertise<geometry_msgs::PolygonStamped>(TOPIC_OUT, 5);
-    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, polygonCallback);
+    relativePub = n.advertise<geometry_msgs::PolygonStamped>(TOPIC_OUT, 1);
+    ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 1, polygonCallback);
     ros::Subscriber scaleSub = n.subscribe(TOPIC_SCALEFACTOR, 1, scaleFactor_Callback);
     
     tf2_ros::Buffer tBuffer;

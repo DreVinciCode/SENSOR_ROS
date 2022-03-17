@@ -8,4 +8,8 @@
 		<remap from="image" to="/camera/rgb/image_raw"/>
  	</node>
 
+ 	<node name="serial_node" pkg="rosserial_python" type="serial_node.py" output="screen">
+    	<param name="port" value="/dev/ttyUSB2"/>
+ 	</node>
+
 </launch>

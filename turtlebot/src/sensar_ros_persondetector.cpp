@@ -25,7 +25,7 @@ std::string rosparam = "/SENSAR/person_threshold";
 people_msgs::PositionMeasurementArray latestMsg;
 ros::Publisher vis_pub;
 
-const int FREQUENCY = 30;
+const int FREQUENCY = 10;
 
 void publishLatest()
 {
@@ -58,6 +58,11 @@ void publishLatest()
 		marker.color.r = 0.0;
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
+
+		std::ostringstream stm;
+		stm << leg.reliability;
+		//marker.text = std::to_string(leg.reliability);
+		marker.text = stm.str();
 		
 		markerArray.markers.push_back(marker);
 	}
@@ -95,7 +100,7 @@ int main (int argc, char **argv)
     ros::init(argc, argv, "sensar_ros_persondetector");
     ros::NodeHandle n;
     
-    n.setParam(rosparam, 1.0);
+    n.setParam(rosparam, -2.0);
     
     vis_pub = n.advertise<visualization_msgs::MarkerArray>(TOPIC_OUT, 5);
     ros::Subscriber globalSub  = n.subscribe(TOPIC_IN, 5, legdetectorCallback);
