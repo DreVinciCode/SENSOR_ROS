@@ -9,7 +9,7 @@
  	</node>
 
  	<node name="serial_node" pkg="rosserial_python" type="serial_node.py" output="screen">
-    	<param name="port" value="/dev/ttyUSB2"/>
+    	<param name="port" value="/dev/ttyUSB2"/>  <!--This value may be different for other machines -->
  	</node>
 
 </launch>
