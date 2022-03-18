@@ -4,10 +4,9 @@
     <param name="/leg_detector/fixed_frame" value="base_link"/>
     <param name="/leg_detector/leg_reliability_limit" value="0.2" type="double"/>
 
-  <node name="serial_node" pkg="rosserial_python" type="serial_node.py" output="screen">
-  <param name="port" value="/dev/ttyUSB2"/>  <!--This value may be different for other machines -->
-  </node>
-
+  <!-- <node name="serial_node" pkg="rosserial_python" type="serial_node.py" output="screen"> -->
+  <!-- <param name="port" value="/dev/ttyUSB2"/> -->  <!--This value may be different for other machines -->
+  <!-- </node> -->
   <!-- <node name="velocity_tracker" pkg="people_velocity_tracker" type="tracker.py" respawn="true"/> -->
   <node name="sensar_ros_laserscan" pkg="sensar_ros" type="sensar_ros_laserscan" respawn="true"/>
   <node name="sensar_ros_map" pkg="sensar_ros" type="sensar_ros_map" respawn="true"/>

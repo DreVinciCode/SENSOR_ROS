@@ -12,9 +12,9 @@ from geometry_msgs.msg import Point, PointStamped
 from std_msgs.msg import Header
 
 def generate_pointstamped():
-    return (Point(5.0, 5.0, 5.0),
-    		Point(3.3, 3.3, 3.3),
-    		Point(9.0, 9.0, 9.0),
+    return (Point(2.157, 1.408, 0.0), # D
+    		Point(2.134, -2.12, 0.0), # B
+    		Point(3.876, -4.63, 0.0), # C
  			# set points from remapped room
 )
 
@@ -26,7 +26,7 @@ class randomtargets:
     def next_target(self):
 
         for point in self.targets:
-            input("press enter to start...")			
+            raw_input("press enter to start...")			
             ptstmp = PointStamped()
             ptstmp.point = point
             h = Header()
