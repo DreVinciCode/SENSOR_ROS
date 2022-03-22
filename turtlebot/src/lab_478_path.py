@@ -18,64 +18,59 @@ import rospy
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, PointStamped, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from std_srvs.srv import *
 from tf import transformations
 
 
 class GoToPose():
 	def __init__(self):
 
-    self.counter = 0
-    self.goal_sent = False
+	    self.counter = 0
+	    self.goal_sent = False
 
-	# What to do if shut down (e.g. Ctrl-C or failure)
-	rospy.on_shutdown(self.shutdown)
+	    rospy.on_shutdown(self.shutdown)
 
-	# Tell the action client that we want to spin a thread by default
-	self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
-	rospy.loginfo("Wait for the action server to come up")
-
-	# Allow up to 5 seconds for the action server to come up
-	self.move_base.wait_for_server(rospy.Duration(5))
+	    self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+	    rospy.loginfo("Wait for the action server to come up")
+	    self.move_base.wait_for_server(rospy.Duration(5))
 
 
-def goto(self, pos, quat):
+	def goto(self, pos, quat):
 
-    self.goal_sent = True
-	goal = MoveBaseGoal()
-	goal.target_pose.header.frame_id = 'map'
-	goal.target_pose.header.stamp = rospy.Time.now()
-    goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0), Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
+		self.goal_sent = True
+		goal = MoveBaseGoal()
+		goal.target_pose.header.frame_id = 'map'
+		goal.target_pose.header.stamp = rospy.Time.now()
+		goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0), Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
 
-    # Start moving
-    self.move_base.send_goal(goal)
+		self.move_base.send_goal(goal)
 
-	# Allow TurtleBot up to 60 seconds to complete task
-	success = self.move_base.wait_for_result(rospy.Duration(60))
+		success = self.move_base.wait_for_result(rospy.Duration(60))
 
-    state = self.move_base.get_state()
-    result = False
+		state = self.move_base.get_state()
+		result = False
 
-    if success and state == GoalStatus.SUCCEEDED:
-        # We made it!
-        result = True
-    else:
-        self.move_base.cancel_goal()
+		if success and state == GoalStatus.SUCCEEDED:
+		    # We made it!
+		    result = True
+		else:
+		    self.move_base.cancel_goal()
 
-    self.goal_sent = False
-    return result
+		self.goal_sent = False
+		return result
 
-    def shutdown(self):
-        if self.goal_sent:
-            self.move_base.cancel_goal()
-        rospy.loginfo("Stop")
-        rospy.sleep(1)
+	def shutdown(self):
+		if self.goal_sent:
+		    self.move_base.cancel_goal()
+		rospy.loginfo("Stop")
+		rospy.sleep(1)
 
 if __name__ == "__main__":
     
     key = ['y']
 
-    point_A = [2.15, 1.41, 90]
-	point_B = [2.15, -5.35, 90]
+    point_A = [2.15, 1.41, -90]
+    point_B = [2.15, -5.35, -90]
 
     try:
         rospy.init_node("lab_478_path", anonymous = False)
@@ -109,7 +104,6 @@ if __name__ == "__main__":
 
             if success:
                 rospy.loginfo("Hooray, reached point " + locations_names[goal_index])
-                point_pub.publish(locations_names[goal_index])
 
                 # request user to input file name for rosbag
                 if locations_names[goal_index] == 'A':
