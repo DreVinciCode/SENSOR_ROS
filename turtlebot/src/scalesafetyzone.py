@@ -21,7 +21,7 @@ class randomscale:
     def next_scale(self):
 
         for scale in self.scales:
-            input("press enter to start...")			
+            raw_input("press enter to start...")			
             
             print(scale)
             self.pub.publish(scale)           
