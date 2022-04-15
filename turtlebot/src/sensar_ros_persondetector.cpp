@@ -42,6 +42,7 @@ void publishLatest()
 		marker.id = i;
 		marker.type = visualization_msgs::Marker::SPHERE;
 		marker.action = visualization_msgs::Marker::ADD;
+		marker.lifetime = ros::Duration (1.0);
 			
 		marker.pose.position.x = leg.pos.x;
 		marker.pose.position.y = leg.pos.y;

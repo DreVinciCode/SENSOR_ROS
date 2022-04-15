@@ -1,0 +1,6 @@
+devel_space: /home/turtlebot/catkin_ws/src/SENSAR_ROS/turtlebot/devel
+install: false
+install_space: /home/turtlebot/catkin_ws/src/SENSAR_ROS/turtlebot/install
+profile: default
+source_space: /home/turtlebot/catkin_ws/src/SENSAR_ROS/turtlebot/src
+workspace: /home/turtlebot/catkin_ws/src/SENSAR_ROS/turtlebot
