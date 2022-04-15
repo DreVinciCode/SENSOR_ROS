@@ -14,7 +14,7 @@ from std_msgs.msg import Header
 def generate_pointstamped():
     return (Point(2.157, 1.408, 0.0), # D
     		Point(2.134, -2.12, 0.0), # B
-    		Point(3.876, -4.63, 0.0), # C
+    		Point(3.876, -0.03, 0.0), # M
  			# set points from remapped room
 )
 
