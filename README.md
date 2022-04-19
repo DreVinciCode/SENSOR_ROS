@@ -19,3 +19,8 @@ Robotic data that SENSAR can currently display include:
 
 Adding future arduino components; install with the following:
 $ sudo apt-get install ros-kinetic-rosserial-arduino ros-kinetic-rosserial ros-kinetic-rosserial-embeddedlinux ros-kinetic-rosserial-windows ros-kinetic-rosserial-server ros-kinetic-rosserial-python
+
+Install rosbridge_suite through commandline:
+sudo apt-get install ros-noetic-rosbridge-suite
+
+
