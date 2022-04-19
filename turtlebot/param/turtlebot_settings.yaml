@@ -1,0 +1,12 @@
+# Customize parameters for move_base
+# Decrease max velocity
+# For other parameters, indent with 2 spaces
+move_base:
+  DWAPlannerROS:
+    max_vel_x: 0.17  # 0.55
+    acc_lim_x: 1.0
+    xy_goal_tolerance: 0.2  # 0.10
+
+navigation_velocity_smoother:
+  speed_lim_v: 0.17
+  accel_lim_v: 0.1
