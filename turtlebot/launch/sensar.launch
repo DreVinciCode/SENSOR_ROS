@@ -20,5 +20,7 @@
   <node name="sensar_ros_legdetector" pkg="sensar_ros" type="sensar_ros_legdetector" respawn="true"/>
   <node name="sensar_ros_persondetector" pkg="sensar_ros" type="sensar_ros_persondetector" respawn="true"/>
 
-  <rosparam file="$(find sensar_ros)/param/turtlebot_settings.yaml" command="load" />
+  <node name="turtlebot_settings" pkg="sensar_ros" type="turtlebot_settings.py" output="screen"/>	
+
+  <!-- <rosparam file="$(find sensar_ros)/param/turtlebot_settings.yaml" command="load" /> -->
 </launch>

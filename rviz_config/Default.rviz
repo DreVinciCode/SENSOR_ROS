@@ -17,7 +17,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Camera
+    SyncSource: ""
   - Class: rviz/Views
     Expanded:
       - /Current View1
