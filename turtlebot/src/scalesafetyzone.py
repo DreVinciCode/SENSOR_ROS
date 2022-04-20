@@ -11,7 +11,7 @@ import rospy
 from std_msgs.msg import Header, Float32
 
 def generate_scales():
-    return 5.0, 1.0, 3.0, 2.0,
+    return 3.0, 1.0, 4.0, 2.0,
 
 class randomscale:
     def __init__(self):
