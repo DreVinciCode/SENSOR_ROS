@@ -45,7 +45,7 @@ class GoToPose():
 
 		self.move_base.send_goal(goal)
 
-		success = self.move_base.wait_for_result(rospy.Duration(60))
+		success = self.move_base.wait_for_result(rospy.Duration(90))
 
 		state = self.move_base.get_state()
 		result = False
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     
     key = ['y']
 
-    point_A = [2.15, 1.41, -90]
+    point_A = [2.15, 1.21, -90]
     point_B = [2.15, -5.35, -90]
 
     try:

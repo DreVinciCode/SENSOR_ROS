@@ -85,7 +85,7 @@ int main (int argc, char **argv)
 
         ros::spinOnce(); 
 
-        if(receivedMessage)
+        if(true)
         {
             publishLatest();
         }   
