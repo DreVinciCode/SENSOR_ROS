@@ -1,4 +1,4 @@
 std_msgs/ColorRGBA color
 float64 duration
-int8[] leds
+int16[] leds
 bool repeating
