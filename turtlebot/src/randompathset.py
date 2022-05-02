@@ -18,24 +18,44 @@ import rospy
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, PointStamped, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from std_msgs.msg import Header
 from std_srvs.srv import *
 from tf import transformations
 
+
+def generate_pointstamped():
+    return (Point(2.17, -0.03, 0.0), # A
+    		Point(2.15, -2.12, 0.0), # B
+    		Point(3.87, -0.03, 0.0), # M
+    		Point(2.15, -4.04, 0.0), # N
+ 			# set points from remapped room
+)
 
 class GoToPose():
 	def __init__(self):
 
 	    self.counter = 0
 	    self.goal_sent = False
-
+	    self.targets = generate_pointstamped()
 	    rospy.on_shutdown(self.shutdown)
-
+	    self.pub = rospy.Publisher("/SENSAR/random_point", PointStamped, queue_size = 1)
 	    self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
 	    rospy.loginfo("Wait for the action server to come up")
 	    self.move_base.wait_for_server(rospy.Duration(5))
 
 
 	def goto(self, pos, quat):
+	
+		point = self.targets[self.counter]
+		ptstmp = PointStamped()
+		ptstmp.point = point
+		h = Header()
+		h.stamp = rospy.Time.now()
+		h.frame_id = "map"
+		ptstmp.header = h
+
+		#print(ptstmp)
+		self.pub.publish(ptstmp)    
 
 		self.goal_sent = True
 		goal = MoveBaseGoal()
@@ -44,8 +64,10 @@ class GoToPose():
 		goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0), Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
 
 		self.move_base.send_goal(goal)
-
+		#self.move_base.cancel_goal()
+		self.counter = self.counter + 1
 		success = self.move_base.wait_for_result(rospy.Duration(90))
+		'''success = self.move_base.wait_for_result(rospy.Duration(90))
 
 		state = self.move_base.get_state()
 		result = False
@@ -57,7 +79,8 @@ class GoToPose():
 		    self.move_base.cancel_goal()
 
 		self.goal_sent = False
-		return result
+		'''
+		return True
 
 	def shutdown(self):
 		if self.goal_sent:
@@ -71,6 +94,8 @@ if __name__ == "__main__":
 
     point_A = [2.17, -0.03, -90]
     point_B = [2.15, -2.12, -90]
+    point_C = [3.87, -0.03, -90]
+    point_D = [2.15, -4.04, -90]
 
     try:
         rospy.init_node("lab_478_path", anonymous = False)
@@ -78,13 +103,14 @@ if __name__ == "__main__":
 
         start_index = 0
         goal_index = start_index
-        locations_names = ['A', 'B']
+        locations_names = ['A', 'B', 'C', 'D']
         num_location = len(locations_names)
 
         location_coord = np.zeros([num_location,3])
         location_coord[0] = point_A
         location_coord[1] = point_B
-
+        location_coord[2] = point_C
+        location_coord[3] = point_D
 
         counter = 0
 
@@ -104,25 +130,11 @@ if __name__ == "__main__":
 
             if success:
                 rospy.loginfo("Hooray, reached point " + locations_names[goal_index])
+                proceed = raw_input("To continue with path press 'y'...")
+                
+                while proceed not in key:
+					proceed = raw_input("You must press 'y'...")
 
-                # request user to input file name for rosbag
-                if locations_names[goal_index] == 'A':
-                    counter += 1
-
-                    proceed = raw_input("To continue with path press 'y'...")
-
-                    while proceed not in key:
-                        proceed = raw_input("You must press 'y'...")
-
-
-                elif locations_names[goal_index] == 'B':
-                    rospy.wait_for_service('/move_base/clear_costmaps')
-                    clear_costmap = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-                    resp1 = clear_costmap()
-                    print("cleared Costmap")
-
-                else:
-                    pass
 
             else:
                 rospy.loginfo("The base failed to reach point " + locations_names[goal_index])
