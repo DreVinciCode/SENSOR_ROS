@@ -23,4 +23,7 @@ $ sudo apt-get install ros-kinetic-rosserial-arduino ros-kinetic-rosserial ros-k
 Install rosbridge_suite through commandline:
 sudo apt-get install ros-noetic-rosbridge-suite
 
+May need to install people_msgs:
+sudo apt-get install ros-kinetic-people-msgs
+
 
