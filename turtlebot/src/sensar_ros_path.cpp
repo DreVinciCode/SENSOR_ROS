@@ -19,7 +19,7 @@ const std::string TOPIC_OUT = "/SENSAR/path";
 const std::string FRAME_IN  = "map";
 const std::string FRAME_OUT = "base_link";
 
-const int REDUCTION_FACTOR  = 1;
+const int REDUCTION_FACTOR  = 2;
 const int FREQUENCY         = 5;
 
 geometry_msgs::TransformStamped transformToBase_link;
