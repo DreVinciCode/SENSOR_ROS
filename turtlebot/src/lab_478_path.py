@@ -69,8 +69,8 @@ if __name__ == "__main__":
     
     key = ['y']
 
-    point_A = [2.15, 1.21, -90]
-    point_B = [2.15, -5.35, -90]
+    point_A = [-0.5, 0.53, -90]
+    point_B = [0.63, -0.45, -90]
 
     try:
         rospy.init_node("lab_478_path", anonymous = False)

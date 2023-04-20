@@ -1,22 +1,18 @@
 <launch>
   
-<!--     <arg name="map_file" default="$(find maps)/real/tufts_joyce/4th_floor/lab_474.yaml"/>
-    <arg name="map_file" default="$(find maps)/simulation/turtlebot_world.yaml"/>
-    <arg name="initial_pose_x" value="-2.0"/>
-    <arg name="initial_pose_y" value="-0.5"/>
- -->
   <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>
-
-
   <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
-  <!-- <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch"/> -->
-  <!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/> -->
-  <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/>
 
+  <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+    <arg name="initial_pose_x" value="-2.0"/>
+    <arg name="initial_pose_y" value="-0.45"/>
+  </include>
+
+  <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+    <arg name="move_forward_only" value="true"/>
+  </include> 
 
   <node pkg="map_server" name="map_server" type="map_server" args="$(find turtlebot3_navigation)/maps/map.yaml"/>
-
-
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/WayPoint.rviz"/>
 
 </launch>
