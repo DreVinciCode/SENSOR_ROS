@@ -18,13 +18,8 @@ class setParameters():
         config = client.update_configuration(params)
 
     def controller_callback(self, data):
-	pass
+	    pass
         #print(data.doubles[1].value)
-
-    def test(self,w):
-
-        self.set.doubles[1].value = w
-        #print(self.set)
 
 if __name__ == '__main__':
     controller = setParameters()
