@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         while not rospy.is_shutdown():
             amcl_pose = None
-            while amcl_pose is not None:
+            while amcl_pose is None:
                 amcl_pose = navigator.getPose()
                 print(amcl_pose)
 
