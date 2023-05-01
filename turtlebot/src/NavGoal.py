@@ -36,11 +36,6 @@ class WayPoint():
         self.mainPlan = rospy.Publisher('/customPlan', Path, queue_size=1)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
-        # try:
-        #     rospy.spin()
-        # except:
-        #     rospy.logerr("Failed to call ROS spin")
-        
     def path_callback(self, msg):
         # Loop through each point in the Path message and move the robot to that point
         for pose in msg.plan.poses:
@@ -118,17 +113,10 @@ if __name__ == "__main__":
 
             if keyboard.read_key() == 'n':
                 amcl_pose = navigator.getAmcl_Pose()
-                # print(amcl_pose.pose.pose)
-                # amcl_pose = rospy.wait_for_message('/amcl_pose', PoseWithCovarianceStamped, timeout=5)
-                # print(amcl_pose)
+
             elif keyboard.read_key() == 'b':
-                # path = Path()
                 path = navigator.getPlan()
                 navigator.path_callback(path)
       
-            # while amcl_pose is None:
-            #     amcl_pose = navigator.getPose()
-            #     print(amcl_pose)
-
     except rospy.ROSInterruptException:
         rospy.loginfo("Quitting")
