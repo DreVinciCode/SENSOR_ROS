@@ -13,17 +13,9 @@
   </include> 
 
   <node pkg="map_server" name="map_server" type="map_server" args="$(find turtlebot3_navigation)/maps/map.yaml"/>
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/WayPoint.rviz"/>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/WayPoints.rviz"/>
 
-<<<<<<< Updated upstream
   <rosparam file="$(find sensar_ros)/param/turtlebot_settings.yaml" command="load" />
-=======
-  <rosparam>
-    move_base/local_costmap/inflation_layer/cost_scaling_factor: 20
-    move_base/local_costmap/inflation_layer/inflation_radius: 0.2
-    move_base/planner_frequency: 0.0
-    move_base/max_planning_retries: 1
-  </rosparam>
->>>>>>> Stashed changes
 
 </launch>
