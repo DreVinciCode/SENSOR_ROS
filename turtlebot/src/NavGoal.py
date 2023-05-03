@@ -82,19 +82,20 @@ class WayPoint():
 
         for point in self.WayPoints:
 
-            quat = Quaternion()
-            quat.w = 1 
+            if type(point) == type(PointStamped()):
 
-            # path = Path()
-            # path.header.frame_id = 'map'
-            # path.header.stamp = rospy.Time.now()
+                quat = Quaternion()
+                quat.w = 1
 
-            posestamped = PoseStamped()
-            posestamped.header.frame_id = 'map'
-            posestamped.header.stamp = rospy.Time.now()          
-            posestamped.pose = Pose(point.point, quat)
-            
-            self.poseStampedArray.append(posestamped)
+                posestamped = PoseStamped()
+                posestamped.header.frame_id = 'map'
+                posestamped.header.stamp = rospy.Time.now()          
+                posestamped.pose = Pose(point.point, quat)
+                
+                self.poseStampedArray.append(posestamped)
+
+            elif type(point) == type(PoseStamped):
+                self.poseStampedArray.append(posestamped)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
 
