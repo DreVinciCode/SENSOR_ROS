@@ -22,17 +22,18 @@ from tf import transformations
 def generate_pointstamped():
     return (Point(0.59, -0.57, 0.0), # A
     		Point(0.62, 0.53, 0.0), # B
-    		# Point(-1.14, 0.54, 0.0), # M
+    		Point(0, 0.54, 0.0), # M
  			# set points from remapped room
 
             # points are in map frame
 )
 
-
 class WayPoint():
     def __init__(self):
         self._amcl_pose = None
         self.goal_sent = False   
+
+        self.WayPoints = []
 
         self.poseStampedArray = []
         self.paths = []
@@ -59,6 +60,12 @@ class WayPoint():
 
         self.move_base_flex = rospy.Publisher('/move_base_flex/move_base/goal', MoveBaseActionGoal, queue_size=10)
 
+        self.click_point = rospy.Subscriber('clicked_point', PointStamped, self.clicked_point_callback )
+
+    def clicked_point_callback(self, data):
+        self.WayPoints.append(data)
+        print(len(self.WayPoints))
+
 
     def move_base_flex_callback(self, path_msg):
         goal_msg = ExePathGoal()
@@ -73,19 +80,20 @@ class WayPoint():
         start.pose = self.getAmcl_Pose().pose.pose
         self.poseStampedArray.append(start)
 
-        for point in self.targets:
+        for point in self.WayPoints:
 
             quat = Quaternion()
             quat.w = 1 
 
-            path = Path()
-            path.header.frame_id = 'map'
-            path.header.stamp = rospy.Time.now()
+            # path = Path()
+            # path.header.frame_id = 'map'
+            # path.header.stamp = rospy.Time.now()
 
             posestamped = PoseStamped()
             posestamped.header.frame_id = 'map'
             posestamped.header.stamp = rospy.Time.now()          
-            posestamped.pose = Pose(point, quat)
+            posestamped.pose = Pose(point.point, quat)
+            
             self.poseStampedArray.append(posestamped)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
@@ -197,6 +205,8 @@ if __name__ == "__main__":
             elif keyboard.read_key() == 'p':
                 navigator.create_waypoints()
                 navigator.mainPlan.publish(navigator.combined_path)
+                
+            elif keyboard.read_key() == 'r':
                 navigator.move_base_flex_callback(navigator.combined_path)
                 
 

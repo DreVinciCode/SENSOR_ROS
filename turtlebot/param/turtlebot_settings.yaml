@@ -5,7 +5,7 @@ move_base:
   DWAPlannerROS:
     # max_vel_x: 0.17  # 0.55
     # acc_lim_x: 1.0
-    xy_goal_tolerance: 0.2  # 0.10
+    xy_goal_tolerance: 0.1  # 0.10
   
   local_costmap:
     inflation_layer:

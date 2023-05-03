@@ -15,9 +15,9 @@
 
   <node pkg="map_server" name="map_server" type="map_server" args="$(find turtlebot3_navigation)/maps/map.yaml"/>
   
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/Default.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_config)/WayPoints.rviz"/>
 
-  <!-- <rosparam file="$(find sensar_ros)/param/turtlebot_settings.yaml" command="load" /> -->
+  <rosparam file="$(find sensar_ros)/param/turtlebot_settings.yaml" command="load" />
 
   <include file="$(find sensar_ros)/launch/includes/move_base.launch.xml"/>
 
