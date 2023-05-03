@@ -7,9 +7,10 @@ import os
 import rospy
 import keyboard
 
+from actionlib import SimpleActionClient
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import *
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal, MoveBaseGoal
 from std_srvs.srv import *
 from std_msgs.msg import *
 from nav_msgs.srv import *
@@ -40,10 +41,12 @@ class WayPoint():
         self.targets = generate_pointstamped()
         
         self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+
+        # self.move_base_flex = actionlib.SimpleActionClient("move_base_flex", MoveBaseActionGoal)
+
         rospy.loginfo("Wait for the action server to come up")
         self.move_base.wait_for_server(rospy.Duration(5))
-        
-        
+                
         self.current_pose = rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, self.Pose_callback)
 
         planPath_full_name = '/move_base/make_plan'
@@ -53,6 +56,25 @@ class WayPoint():
         self.mainPlan = rospy.Publisher('customPlan', Path, queue_size=1)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
+        # self.move_base_flex = rospy.Publisher('/move_base_flex/goal', MoveBaseActionGoal, queue_size=10)
+        self.client = SimpleActionClient('/move_base_flex/move_base', MoveBaseActionGoal)
+
+
+    def move_base_flex_callback(self, path_msg):
+        # Create a move_base_flex goal message
+        goal_msg = MoveBaseActionGoal()
+
+        # Fill in the header information of the goal message
+        goal_msg.goal_id.stamp = rospy.Time.now()
+        goal_msg.goal_id.id = 'path_goal'
+
+        # Fill in the pose information of the goal message
+        for pose in path_msg.poses:
+            goal_msg.goal.target_pose.header.frame_id = 'map'
+            goal_msg.goal.target_pose.header.stamp = rospy.Time.now()
+            goal_msg.goal.target_pose.pose = pose.pose 
+     
+            # self.move_base_flex.publish(goal_msg)
     
     def create_waypoints(self):
         
@@ -106,14 +128,12 @@ class WayPoint():
             y_goal = pose.pose.position.y
 
             # Calculate the distance and angle to the goal point
-            current_pose = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped).pose.pose
+            current_pose = rospy.wait_for_message("/odom", Odometry).pose.pose
             x_current = current_pose.position.x
             y_current = current_pose.position.y
 
             # Calculate the desired angle to turn towards the goal
             angle_to_goal = atan2(y_goal - y_current, x_goal - x_current)
-
-            print("angle: " + str(angle_to_goal))
 
             # Create a Twist message to rotate the Turtlebot
             rotate_twist = Twist()
@@ -131,7 +151,7 @@ class WayPoint():
 
             # Wait for the Turtlebot to reach the goal position
             while abs(x_goal - x_current) > 0.1 or abs(y_goal - y_current) > 0.1:
-                current_pose = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped).pose.pose
+                current_pose = rospy.wait_for_message("/odom", Odometry).pose.pose
                 x_current = current_pose.position.x
                 y_current = current_pose.position.y
 
@@ -147,10 +167,10 @@ class WayPoint():
         goal.header.frame_id = 'map'
         goal.pose = self.getAmcl_Pose().pose.pose
         goal.pose.position.x = goal.pose.position.x + 1
+        goal.pose.position.y = goal.pose.position.y + 1
         tolerance = Float32()
-        tolerance = 0.0
+        tolerance = 0.5
 
-        # return plan.goal
         return self.planPath(start, goal, tolerance)   
 
     def Pose_callback(self, data):
@@ -178,11 +198,19 @@ if __name__ == "__main__":
                 amcl_pose = navigator.getAmcl_Pose()
 
             elif keyboard.read_key() == 'b':
-                path = navigator.getPlan()
-                navigator.path_callback(navigator.combined_path)
+                plan = navigator.getPlan()
+                plan.plan.header.frame_id = 'map'
+                
+                navigator.mainPlan.publish(plan.plan)
+
+                # navigator.path_callback(plan.plan)
+                navigator.move_base_flex_callback(plan.plan)
+
+                # navigator.path_callback(navigator.combined_path)
 
             elif keyboard.read_key() == 'p':
-                navigator.create_waypoints()
-      
+                # navigator.create_waypoints()
+                pass
+
     except rospy.ROSInterruptException:
         rospy.loginfo("Quitting")
