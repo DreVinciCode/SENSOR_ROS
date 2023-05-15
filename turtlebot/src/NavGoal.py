@@ -10,7 +10,8 @@ import keyboard
 from actionlib import SimpleActionClient
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import *
-from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal, MoveBaseGoal
+from move_base_msgs.msg import MoveBaseAction as MBA
+from mbf_msgs.msg import MoveBaseActionGoal, ExePathAction, ExePathGoal
 from std_srvs.srv import *
 from std_msgs.msg import *
 from nav_msgs.srv import *
@@ -21,17 +22,18 @@ from tf import transformations
 def generate_pointstamped():
     return (Point(0.59, -0.57, 0.0), # A
     		Point(0.62, 0.53, 0.0), # B
-    		Point(-1.14, 0.54, 0.0), # M
+    		Point(0, 0.54, 0.0), # M
  			# set points from remapped room
 
             # points are in map frame
 )
 
-
 class WayPoint():
     def __init__(self):
         self._amcl_pose = None
         self.goal_sent = False   
+
+        self.WayPoints = []
 
         self.poseStampedArray = []
         self.paths = []
@@ -40,9 +42,7 @@ class WayPoint():
 
         self.targets = generate_pointstamped()
         
-        self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
-
-        # self.move_base_flex = actionlib.SimpleActionClient("move_base_flex", MoveBaseActionGoal)
+        self.move_base = actionlib.SimpleActionClient("move_base", MBA)
 
         rospy.loginfo("Wait for the action server to come up")
         self.move_base.wait_for_server(rospy.Duration(5))
@@ -56,46 +56,46 @@ class WayPoint():
         self.mainPlan = rospy.Publisher('customPlan', Path, queue_size=1)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
-        # self.move_base_flex = rospy.Publisher('/move_base_flex/goal', MoveBaseActionGoal, queue_size=10)
-        self.client = SimpleActionClient('/move_base_flex/move_base', MoveBaseActionGoal)
+        self.client = actionlib.SimpleActionClient('/move_base_flex/exe_path', ExePathAction)
+
+        self.move_base_flex = rospy.Publisher('/move_base_flex/move_base/goal', MoveBaseActionGoal, queue_size=10)
+
+        self.click_point = rospy.Subscriber('clicked_point', PointStamped, self.clicked_point_callback )
+
+    def clicked_point_callback(self, data):
+        self.WayPoints.append(data)
+        print(len(self.WayPoints))
 
 
     def move_base_flex_callback(self, path_msg):
-        # Create a move_base_flex goal message
-        goal_msg = MoveBaseActionGoal()
+        goal_msg = ExePathGoal()
+        goal_msg.path = path_msg
+        # goal_msg.controller = 'dwa'
+        
+        self.client.send_goal(goal_msg)
 
-        # Fill in the header information of the goal message
-        goal_msg.goal_id.stamp = rospy.Time.now()
-        goal_msg.goal_id.id = 'path_goal'
-
-        # Fill in the pose information of the goal message
-        for pose in path_msg.poses:
-            goal_msg.goal.target_pose.header.frame_id = 'map'
-            goal_msg.goal.target_pose.header.stamp = rospy.Time.now()
-            goal_msg.goal.target_pose.pose = pose.pose 
-     
-            # self.move_base_flex.publish(goal_msg)
-    
     def create_waypoints(self):
         
         start = PoseStamped()
         start.pose = self.getAmcl_Pose().pose.pose
         self.poseStampedArray.append(start)
 
-        for point in self.targets:
+        for point in self.WayPoints:
 
-            quat = Quaternion()
-            quat.w = 1 
+            if type(point) == type(PointStamped()):
 
-            path = Path()
-            path.header.frame_id = 'map'
-            path.header.stamp = rospy.Time.now()
+                quat = Quaternion()
+                quat.w = 1
 
-            posestamped = PoseStamped()
-            posestamped.header.frame_id = 'map'
-            posestamped.header.stamp = rospy.Time.now()          
-            posestamped.pose = Pose(point, quat)
-            self.poseStampedArray.append(posestamped)
+                posestamped = PoseStamped()
+                posestamped.header.frame_id = 'map'
+                posestamped.header.stamp = rospy.Time.now()          
+                posestamped.pose = Pose(point.point, quat)
+                
+                self.poseStampedArray.append(posestamped)
+
+            elif type(point) == type(PoseStamped):
+                self.poseStampedArray.append(posestamped)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
 
@@ -203,14 +203,13 @@ if __name__ == "__main__":
                 
                 navigator.mainPlan.publish(plan.plan)
 
-                # navigator.path_callback(plan.plan)
-                navigator.move_base_flex_callback(plan.plan)
-
-                # navigator.path_callback(navigator.combined_path)
-
             elif keyboard.read_key() == 'p':
-                # navigator.create_waypoints()
-                pass
+                navigator.create_waypoints()
+                navigator.mainPlan.publish(navigator.combined_path)
+                
+            elif keyboard.read_key() == 'r':
+                navigator.move_base_flex_callback(navigator.combined_path)
+                
 
     except rospy.ROSInterruptException:
         rospy.loginfo("Quitting")
