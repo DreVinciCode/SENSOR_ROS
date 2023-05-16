@@ -17,19 +17,28 @@ from std_msgs.msg import *
 from nav_msgs.srv import *
 from nav_msgs.msg import *
 from math import atan2
-from tf import transformations
+from tf2_ros import *
+# from tf2_ros import *
 
 def generate_pointstamped():
     return (Point(0.59, -0.57, 0.0), # A
     		Point(0.62, 0.53, 0.0), # B
     		Point(0, 0.54, 0.0), # M
- 			# set points from remapped room
+ 			# set points from rebase_linkped room
 
-            # points are in map frame
+            # points are in base_link frame
 )
 
 class WayPoint():
     def __init__(self):
+
+        rospy.init_node("NavGoal", anonymous = False)
+
+
+        self.tfBuffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tfBuffer)
+
+
         self._amcl_pose = None
         self.goal_sent = False   
 
@@ -38,7 +47,7 @@ class WayPoint():
         self.poseStampedArray = []
         self.paths = []
         self.combined_path = Path()
-        self.combined_path.header.frame_id = "map" 
+        self.combined_path.header.frame_id = "base_link" 
 
         self.createdPath = Path()
         self.createdPoseStampedArray = PoseStamped()
@@ -67,27 +76,27 @@ class WayPoint():
 
         self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
 
+
+    def clearPaths(self):
+        empty = Path()
+        empty.header.frame_id = 'base_link'
+        self.mainPlan.publish(empty)
+        # self.createdPath = Path()
+
+
     def nav_waypoints_callback(self, data):
-        
         tempPoseStampedArray = []
 
-        start = PoseStamped()
-        start.header.frame_id = 'map'
-        start.pose = self.getAmcl_Pose().pose.pose
-        tempPoseStampedArray.append(start)
-        
+
         for pose in data.poses:
             
             tempPoseStampedArray.append(pose)
 
 
         self.createdPath = data
-        self.createdPath.poses = tempPoseStampedArray
-        self.createdPath.header.frame_id = 'map'
-
-        # self.create_waypoints(data)
-        self.mainPlan.publish(self.createdPath)
-        self.combined_path = self.createdPath
+        self.create_waypoints(data)
+        # self.mainPlan.publish(self.createdPath)
+        # self.combined_path = self.createdPath
         # print(len(data.poses))
 
     def clicked_point_callback(self, data):
@@ -102,35 +111,48 @@ class WayPoint():
         self.client.send_goal(goal_msg)
 
     def create_waypoints(self, data):
-        
+        print(len(data.poses))
+        # self.poseStampedArray = []
+
         start = PoseStamped()
         start.pose = self.getAmcl_Pose().pose.pose
         self.poseStampedArray.append(start)
 
         for point in data.poses:
-
             if type(point) == type(PointStamped()):
 
                 quat = Quaternion()
                 quat.w = 1
 
                 posestamped = PoseStamped()
-                posestamped.header.frame_id = 'map'
+                posestamped.header.frame_id = 'base_link'
                 posestamped.header.stamp = rospy.Time.now()          
                 posestamped.pose = Pose(point.point, quat)
                 
                 self.poseStampedArray.append(posestamped)
 
-            elif type(point) == type(PoseStamped):
-                self.poseStampedArray.append(posestamped)
+            else:
+                print("poseStamped")
+                self.poseStampedArray.append(point)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
 
     def create_paths_from_Waypoints(self, waypoints):
 
+        # Wait for the transformation to become available
+        self.tfBuffer.can_transform("map", "base_link", rospy.Time(), rospy.Duration(1.0))
+
         for i in range(1, len(waypoints)):
             start = waypoints[i -1]
             goal = waypoints[i]
+
+            start = self.tfBuffer.transformPose("map", start)
+            start.header.frame_id = "map"
+            goal = self.tfBuffer.transformPose("map", goal)
+            goal.header.frame_id = "map"
+
+
+
             tolerance = 0.1
             sub_path =  self.planPath(start, goal, tolerance)
             
@@ -191,7 +213,7 @@ class WayPoint():
         start = PoseStamped()
         start.pose = self.getAmcl_Pose().pose.pose
         goal = PoseStamped()
-        goal.header.frame_id = 'map'
+        goal.header.frame_id = 'base_link'
         goal.pose = self.getAmcl_Pose().pose.pose
         goal.pose.position.x = goal.pose.position.x + 1
         goal.pose.position.y = goal.pose.position.y + 1
@@ -211,7 +233,6 @@ class WayPoint():
 
 if __name__ == "__main__":
     try:
-        rospy.init_node("NavGoal", anonymous = False)
         navigator = WayPoint()
 
         # while not rospy.is_shutdown():
@@ -226,16 +247,20 @@ if __name__ == "__main__":
 
             elif keyboard.read_key() == 'b':
                 plan = navigator.getPlan()
-                plan.plan.header.frame_id = 'map'
+                plan.plan.header.frame_id = 'base_link'
                 
                 navigator.mainPlan.publish(plan.plan)
 
             elif keyboard.read_key() == 'p':
-                navigator.create_waypoints()
-                navigator.mainPlan.publish(navigator.combined_path)
-                
+                # navigator.create_waypoints()
+                # navigator.mainPlan.publish(navigator.combined_path)
+                pass
+
             elif keyboard.read_key() == 'r':
                 navigator.move_base_flex_callback(navigator.combined_path)
+
+            elif keyboard.read_key() == 'c':
+                navigator.clearPaths()
                 
 
     except rospy.ROSInterruptException:
