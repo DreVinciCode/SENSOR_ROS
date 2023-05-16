@@ -40,6 +40,9 @@ class WayPoint():
         self.combined_path = Path()
         self.combined_path.header.frame_id = "map" 
 
+        self.createdPath = Path()
+        self.createdPoseStampedArray = PoseStamped()
+
         self.targets = generate_pointstamped()
         
         self.move_base = actionlib.SimpleActionClient("move_base", MBA)
@@ -62,10 +65,34 @@ class WayPoint():
 
         self.click_point = rospy.Subscriber('clicked_point', PointStamped, self.clicked_point_callback )
 
+        self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
+
+    def nav_waypoints_callback(self, data):
+        
+        tempPoseStampedArray = []
+
+        start = PoseStamped()
+        start.header.frame_id = 'map'
+        start.pose = self.getAmcl_Pose().pose.pose
+        tempPoseStampedArray.append(start)
+        
+        for pose in data.poses:
+            
+            tempPoseStampedArray.append(pose)
+
+
+        self.createdPath = data
+        self.createdPath.poses = tempPoseStampedArray
+        self.createdPath.header.frame_id = 'map'
+
+        # self.create_waypoints(data)
+        self.mainPlan.publish(self.createdPath)
+        self.combined_path = self.createdPath
+        # print(len(data.poses))
+
     def clicked_point_callback(self, data):
         self.WayPoints.append(data)
         print(len(self.WayPoints))
-
 
     def move_base_flex_callback(self, path_msg):
         goal_msg = ExePathGoal()
@@ -74,13 +101,13 @@ class WayPoint():
         
         self.client.send_goal(goal_msg)
 
-    def create_waypoints(self):
+    def create_waypoints(self, data):
         
         start = PoseStamped()
         start.pose = self.getAmcl_Pose().pose.pose
         self.poseStampedArray.append(start)
 
-        for point in self.WayPoints:
+        for point in data.poses:
 
             if type(point) == type(PointStamped()):
 
