@@ -10,15 +10,16 @@ import keyboard
 from actionlib import SimpleActionClient
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import *
-from move_base_msgs.msg import MoveBaseAction as MBA
+from move_base_msgs.msg import MoveBaseActionGoal as MBAG, MoveBaseAction as MBA, MoveBaseGoal
 from mbf_msgs.msg import MoveBaseActionGoal, ExePathAction, ExePathGoal
 from std_srvs.srv import *
 from std_msgs.msg import *
 from nav_msgs.srv import *
 from nav_msgs.msg import *
 from math import atan2
-from tf2_ros import *
-# from tf2_ros import *
+
+import tf2_ros
+import tf2_geometry_msgs
 
 def generate_pointstamped():
     return (Point(0.59, -0.57, 0.0), # A
@@ -38,6 +39,7 @@ class WayPoint():
         self.tfBuffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tfBuffer)
 
+        self.map_frame = 'map'
 
         self._amcl_pose = None
         self.goal_sent = False   
@@ -47,9 +49,11 @@ class WayPoint():
         self.poseStampedArray = []
         self.paths = []
         self.combined_path = Path()
-        self.combined_path.header.frame_id = "base_link" 
+        self.combined_path.header.frame_id = self.map_frame 
 
         self.createdPath = Path()
+        self.createdPath.header.frame_id = "base_link" 
+
         self.createdPoseStampedArray = PoseStamped()
 
         self.targets = generate_pointstamped()
@@ -65,39 +69,43 @@ class WayPoint():
         rospy.wait_for_service(planPath_full_name)
         self.planPath = rospy.ServiceProxy(planPath_full_name, GetPlan)
 
-        self.mainPlan = rospy.Publisher('customPlan', Path, queue_size=1)
+        self.mainPlan = rospy.Publisher('/customPlan', Path, queue_size=1)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
         self.client = actionlib.SimpleActionClient('/move_base_flex/exe_path', ExePathAction)
 
         self.move_base_flex = rospy.Publisher('/move_base_flex/move_base/goal', MoveBaseActionGoal, queue_size=10)
 
+        # self.move_base_goal = rospy.Publisher("/move_base/goal", MBAG , queue_size=1)
+
         self.click_point = rospy.Subscriber('clicked_point', PointStamped, self.clicked_point_callback )
 
         self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
 
 
+    def move_base_goal(self, path):
+
+        for pose in path.poses:
+
+            pose_goal = MBAG()
+            goal = MoveBaseGoal()
+            goal.target_pose = pose
+
+            pose_goal.goal = goal
+        
+        self.move_base_flex.publish(pose_goal)
+
     def clearPaths(self):
         empty = Path()
-        empty.header.frame_id = 'base_link'
+        empty.header.frame_id = 'map'
         self.mainPlan.publish(empty)
         # self.createdPath = Path()
 
 
     def nav_waypoints_callback(self, data):
-        tempPoseStampedArray = []
-
-
-        for pose in data.poses:
-            
-            tempPoseStampedArray.append(pose)
-
 
         self.createdPath = data
         self.create_waypoints(data)
-        # self.mainPlan.publish(self.createdPath)
-        # self.combined_path = self.createdPath
-        # print(len(data.poses))
 
     def clicked_point_callback(self, data):
         self.WayPoints.append(data)
@@ -111,12 +119,14 @@ class WayPoint():
         self.client.send_goal(goal_msg)
 
     def create_waypoints(self, data):
-        print(len(data.poses))
-        # self.poseStampedArray = []
+        self.poseStampedArray = []
 
-        start = PoseStamped()
-        start.pose = self.getAmcl_Pose().pose.pose
-        self.poseStampedArray.append(start)
+        # start = PoseStamped()
+        # start.header.frame_id = "map"
+        # start.pose = self.getAmcl_Pose().pose.pose
+        # transform = self.tfBuffer.lookup_transform("base_link", "map", rospy.Time(0), rospy.Duration(0.2))
+        # start_transform = tf2_geometry_msgs.do_transform_pose(start, transform)
+        # self.poseStampedArray.append(start_transform)
 
         for point in data.poses:
             if type(point) == type(PointStamped()):
@@ -132,30 +142,31 @@ class WayPoint():
                 self.poseStampedArray.append(posestamped)
 
             else:
-                print("poseStamped")
                 self.poseStampedArray.append(point)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
 
     def create_paths_from_Waypoints(self, waypoints):
 
-        # Wait for the transformation to become available
-        self.tfBuffer.can_transform("map", "base_link", rospy.Time(), rospy.Duration(1.0))
-
         for i in range(1, len(waypoints)):
+            
             start = waypoints[i -1]
             goal = waypoints[i]
+            # goal.pose.position.z = 0.0
 
-            start = self.tfBuffer.transformPose("map", start)
-            start.header.frame_id = "map"
-            goal = self.tfBuffer.transformPose("map", goal)
-            goal.header.frame_id = "map"
+            try:
+                transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
+                start = tf2_geometry_msgs.do_transform_pose(start, transform)
+                goal = tf2_geometry_msgs.do_transform_pose(goal, transform)
 
+            except:
+                print("Transform failed.")
 
-
-            tolerance = 0.1
+            tolerance = 0.01
             sub_path =  self.planPath(start, goal, tolerance)
-            
+            sub_path.plan.header.frame_id = "map"
+
+
             self.path_append(sub_path.plan)
 
     def path_append(self, path):
@@ -168,6 +179,13 @@ class WayPoint():
             self.combined_path.poses += path.poses
 
         self.mainPlan.publish(self.combined_path)
+
+    def alternatePathGoal(self):
+        for path in self.paths:
+            goal_msg = ExePathGoal()
+            goal_msg.path = path            
+
+            self.client.send_goal_and_wait(goal_msg)
 
     def path_callback(self, msg):
         # Loop through each point in the Path message and move the robot to that point
@@ -243,21 +261,24 @@ if __name__ == "__main__":
         while not rospy.is_shutdown():
 
             if keyboard.read_key() == 'n':
+                
                 amcl_pose = navigator.getAmcl_Pose()
 
             elif keyboard.read_key() == 'b':
-                plan = navigator.getPlan()
-                plan.plan.header.frame_id = 'base_link'
+                pass
+                # plan = navigator.getPlan()
+                # plan.plan.header.frame_id = 'base_link'
                 
-                navigator.mainPlan.publish(plan.plan)
+                # navigator.mainPlan.publish(plan.plan)
 
             elif keyboard.read_key() == 'p':
-                # navigator.create_waypoints()
+                navigator.path_callback(navigator.createdPath)
                 # navigator.mainPlan.publish(navigator.combined_path)
                 pass
 
             elif keyboard.read_key() == 'r':
-                navigator.move_base_flex_callback(navigator.combined_path)
+                # navigator.move_base_flex_callback(navigator.combined_path)
+                navigator.alternatePathGoal()
 
             elif keyboard.read_key() == 'c':
                 navigator.clearPaths()
