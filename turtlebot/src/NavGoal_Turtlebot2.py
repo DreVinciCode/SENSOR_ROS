@@ -5,7 +5,6 @@ import argparse
 import numpy as np
 import os
 import rospy
-import keyboard
 
 from actionlib import SimpleActionClient
 from actionlib_msgs.msg import *
@@ -85,6 +84,7 @@ class WayPoint():
 
         self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
 
+        self.execute_goal = rospy.Subscriber("/SENSAR/execute", Empty, self.move_base_send_goals)
 
     # def move_base_goal(self, path):
 
@@ -184,8 +184,7 @@ class WayPoint():
         self.mainPlan.publish(self.combined_path)
 
 
-    def move_base_send_goals(self):
-
+    def move_base_send_goals(self, data):
         for path in self.paths:
 
             goal = MoveBaseGoal()
@@ -281,38 +280,6 @@ class WayPoint():
 if __name__ == "__main__":
     try:
         navigator = WayPoint()
-
-        # while not rospy.is_shutdown():
-        #     amcl_pose = navigator.getPose()
-        #     print(amcl_pose)
-        #     rospy.sleep(1.0)
-
-        while not rospy.is_shutdown():
-
-            if keyboard.read_key() == 'n':
-                
-                amcl_pose = navigator.getAmcl_Pose()
-
-            elif keyboard.read_key() == 'b':
-                pass
-                # plan = navigator.getPlan()
-                # plan.plan.header.frame_id = 'base_link'
-                
-                # navigator.mainPlan.publish(plan.plan)
-
-            elif keyboard.read_key() == 'p':
-                navigator.path_callback(navigator.createdPath)
-                # navigator.mainPlan.publish(navigator.combined_path)
-                pass
-
-            elif keyboard.read_key() == 'r':
-                # navigator.move_base_flex_callback(navigator.combined_path)
-                # navigator.alternatePathGoal()
-                navigator.move_base_send_goals()
-
-            elif keyboard.read_key() == 'c':
-                navigator.clearPaths()
-                
 
     except rospy.ROSInterruptException:
         rospy.loginfo("Quitting")
