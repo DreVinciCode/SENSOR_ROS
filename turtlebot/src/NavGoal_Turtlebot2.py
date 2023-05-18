@@ -117,7 +117,7 @@ class WayPoint():
 
 
     def nav_waypoints_callback(self, data):
-        # self.mainPlan.publish(data)
+        self.mainPlan.publish(data)
 
         self.createdPath = data
         # self.create_waypoints(data)
@@ -196,11 +196,6 @@ class WayPoint():
 
     def move_base_send_goals(self, data):
 
-        tempPath = Path()
-        tempPath.header.frame_id = 'map'
-
-        poses = []
-
         for pose in self.createdPath.poses:
 
             self.goal_sent = True
@@ -212,24 +207,19 @@ class WayPoint():
 
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
-
-            poses.append(pose)
             
             goal = MoveBaseGoal()
             goal.target_pose = pose
 
-        tempPath.poses = poses
-
-        self.mainPlan.publish(tempPath)
-            # self.move_base.send_goal(goal)
-            # success = self.move_base.wait_for_result(rospy.Duration(60)) 
-            # state = self.move_base.get_state()
+            self.move_base.send_goal(goal)
+            success = self.move_base.wait_for_result(rospy.Duration(60)) 
+            state = self.move_base.get_state()
             
-            # if success and state == GoalStatus.SUCCEEDED:
-            #     # We made it!
-            #     result = True
-            # else:
-            #     self.move_base.cancel_goal()
+            if success and state == GoalStatus.SUCCEEDED:
+                # We made it!
+                result = True
+            else:
+                self.move_base.cancel_goal()
 
 
     def move_base_send_minigoals(self, data):
