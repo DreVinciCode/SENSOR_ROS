@@ -188,8 +188,7 @@ class WayPoint():
 
     def move_base_send_goals(self, data):
 
-        print("Here")
-        for path in self.paths:
+        for path in self.paths.poses:
 
             goal = MoveBaseGoal()
             goal.target_pose.header.frame_id = "map"
