@@ -188,6 +188,7 @@ class WayPoint():
 
     def move_base_send_goals(self, data):
 
+
         for path in self.paths:
             for point in path.poses:
                 goal = MoveBaseGoal()
@@ -197,15 +198,6 @@ class WayPoint():
 
 
                 self.move_base.send_goal_and_wait(goal)
-                wait = self.move_base.wait_for_result()
-
-                if not wait:
-                    rospy.logerr("Action server not available!")
-                    rospy.signal_shutdown("Action server not available!")
-
-                else:
-                    return self.move_base.get_result()
-
 
 
     # def alternatePathGoal(self):
