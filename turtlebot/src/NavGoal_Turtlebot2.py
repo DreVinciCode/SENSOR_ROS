@@ -126,13 +126,6 @@ class WayPoint():
     def create_waypoints(self, data):
         self.poseStampedArray = []
 
-        # start = PoseStamped()
-        # start.header.frame_id = "map"
-        # start.pose = self.getAmcl_Pose().pose.pose
-        # transform = self.tfBuffer.lookup_transform("base_link", "map", rospy.Time(0), rospy.Duration(0.2))
-        # start_transform = tf2_geometry_msgs.do_transform_pose(start, transform)
-        # self.poseStampedArray.append(start_transform)
-
         for point in data.poses:
             if type(point) == type(PointStamped()):
 
@@ -147,6 +140,12 @@ class WayPoint():
                 self.poseStampedArray.append(posestamped)
 
             else:
+
+                quat = Quaternion()
+                quat.w = 1
+
+                point.pose.orientation = quat
+
                 self.poseStampedArray.append(point)
 
         self.create_paths_from_Waypoints(self.poseStampedArray)       
@@ -167,7 +166,7 @@ class WayPoint():
             except:
                 print("Transform failed.")
 
-            tolerance = 0.01
+            tolerance = 0.1
             sub_path =  self.planPath(start, goal, tolerance)
             sub_path.plan.header.frame_id = "map"
 
@@ -185,9 +184,20 @@ class WayPoint():
 
         self.mainPlan.publish(self.combined_path)
 
-
     def move_base_send_goals(self, data):
 
+        for pose in self.createdPath.poses:
+            goal = MoveBaseGoal()
+            goal.target_pose = pose
+            transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
+            goal = tf2_geometry_msgs.do_transform_pose(pose, transform)
+            goal.target_pose.header.frame_id = "map"
+            goal.target_pose.header.stamp = rospy.Time.now()
+
+            self.move_base.send_goal_and_wait(goal)
+
+
+    def move_base_send_minigoals(self, data):
 
         for path in self.paths:
             for point in path.poses:
@@ -196,16 +206,7 @@ class WayPoint():
                 goal.target_pose.header.frame_id = "map"
                 goal.target_pose.header.stamp = rospy.Time.now()
 
-
                 self.move_base.send_goal_and_wait(goal)
-
-
-    # def alternatePathGoal(self):
-    #     for path in self.paths:
-    #         goal_msg = ExePathGoal()
-    #         goal_msg.path = path            
-
-    #         self.client.send_goal_and_wait(goal_msg)
 
     def path_callback(self, msg):
         # Loop through each point in the Path message and move the robot to that point
