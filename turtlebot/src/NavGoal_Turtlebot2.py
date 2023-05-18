@@ -191,23 +191,20 @@ class WayPoint():
         for path in self.paths:
 
             goal = MoveBaseGoal()
+            goal.target_pose = path
             goal.target_pose.header.frame_id = "map"
             goal.target_pose.header.stamp = rospy.Time.now()
-            goal.target_pose = path.pose
 
-            try:
-                self.move_base.send_goal_and_wait(goal)
 
-            except:
-                self.move_base.send_goal(goal)
-                wait = self.move_base.wait_for_result()
+            self.move_base.send_goal(goal)
+            wait = self.move_base.wait_for_result()
 
-                if not wait:
-                    rospy.logerr("Action server not available!")
-                    rospy.signal_shutdown("Action server not available!")
+            if not wait:
+                rospy.logerr("Action server not available!")
+                rospy.signal_shutdown("Action server not available!")
 
-                else:
-                    return self.move_base.get_result()
+            else:
+                return self.move_base.get_result()
 
 
 
