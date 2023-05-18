@@ -197,7 +197,7 @@ class WayPoint():
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             goal = MoveBaseActionGoal()
-            goal.target_pose = pose
+            goal.goal.target_pose = pose
             goal.header.frame_id = "map"
             goal.header.stamp = rospy.Time.now()
 
