@@ -87,6 +87,8 @@ class WayPoint():
 
         self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
 
+        self.publishPoint = rospy.Publisher("/SENSAR/Points", PointStamped, queue_size=1)
+
         self.execute_goal = rospy.Subscriber("/SENSAR/execute", Empty, self.move_base_send_goals)
 
         rospy.spin()
@@ -208,6 +210,15 @@ class WayPoint():
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             
+
+            point = PointStamped()
+            point.header.frame_id = 'map'
+            point.point.x = pose.pose.position.x
+            point.point.y = pose.pose.position.y
+            point.point.z = pose.pose.position.z
+
+            self.publishPoint.publish(point)
+
             goal = MoveBaseGoal()
             goal.target_pose = pose
 
