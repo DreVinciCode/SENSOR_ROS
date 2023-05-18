@@ -202,6 +202,10 @@ class WayPoint():
             # goal.header.stamp = rospy.Time.now()
 
             self.move_base.send_goal_and_wait(goal)
+            print("SubGoal Reached")
+            
+        print("Final Goal reached!")
+
 
 
     def move_base_send_minigoals(self, data):
