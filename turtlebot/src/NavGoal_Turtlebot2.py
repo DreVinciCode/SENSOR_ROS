@@ -108,9 +108,10 @@ class WayPoint():
 
 
     def nav_waypoints_callback(self, data):
+        self.mainPlan.publish(data)
 
         self.createdPath = data
-        self.create_waypoints(data)
+        # self.create_waypoints(data)
 
     def clicked_point_callback(self, data):
         self.WayPoints.append(data)
