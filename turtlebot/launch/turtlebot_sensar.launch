@@ -3,7 +3,7 @@
 	<include file="$(find tbot2_launch)/launch/tbot2_lidar.launch"/>
 	<include file="$(find tbot2_launch)/launch/amcl_navigation.launch"/>	
 	<!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/> -->
-    <include file="$(find ros_tcp_endpoint)/launch/endpoint.launch"/>
+    <!-- <include file="$(find ros_tcp_endpoint)/launch/endpoint.launch"/> -->
 
 	<include file="$(find turtlebot_dashboard)/launch/turtlebot_dashboard.launch"/>
 
