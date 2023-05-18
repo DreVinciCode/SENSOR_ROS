@@ -187,6 +187,8 @@ class WayPoint():
 
 
     def move_base_send_goals(self, data):
+
+        print("Here")
         for path in self.paths:
 
             goal = MoveBaseGoal()
