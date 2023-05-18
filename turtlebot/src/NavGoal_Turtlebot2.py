@@ -86,6 +86,8 @@ class WayPoint():
 
         self.execute_goal = rospy.Subscriber("/SENSAR/execute", Empty, self.move_base_send_goals)
 
+        rospy.spin()
+
     # def move_base_goal(self, path):
 
     #     for pose in path.poses:
