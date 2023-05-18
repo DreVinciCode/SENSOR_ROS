@@ -188,12 +188,12 @@ class WayPoint():
 
     def move_base_send_goals(self, data):
 
-        for path in self.paths.poses:
+        for path in self.paths:
 
             goal = MoveBaseGoal()
             goal.target_pose.header.frame_id = "map"
             goal.target_pose.header.stamp = rospy.Time.now()
-            goal.target_pose = path
+            goal.target_pose = path.pose
 
             try:
                 self.move_base.send_goal_and_wait(goal)
