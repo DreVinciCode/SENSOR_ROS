@@ -196,7 +196,7 @@ class WayPoint():
                 goal.target_pose.header.stamp = rospy.Time.now()
 
 
-                self.move_base.send_goal(goal)
+                self.move_base.send_goal_and_wait(goal)
                 wait = self.move_base.wait_for_result()
 
                 if not wait:
