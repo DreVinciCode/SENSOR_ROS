@@ -35,7 +35,9 @@ class WayPoint():
     def __init__(self):
 
         rospy.init_node("NavGoal", anonymous = False)
-
+       
+        rospy.on_shutdown(self.shutdown)
+        
 
         self.tfBuffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tfBuffer)
@@ -73,6 +75,7 @@ class WayPoint():
         self.mainPlan = rospy.Publisher('/customPlan', Path, queue_size=1)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
+        self.goal_sent = False
 
 
         # self.client = actionlib.SimpleActionClient('/move_base_flex/exe_path', ExePathAction)
@@ -99,6 +102,12 @@ class WayPoint():
     #         pose_goal.goal = goal
         
     #     self.move_base_flex.publish(pose_goal)
+
+    def shutdown(self):
+        if self.goal_sent:
+            self.move_base.cancel_goal()
+        rospy.loginfo("Stop")
+        rospy.sleep(1)
 
     def clearPaths(self):
         empty = Path()
@@ -189,6 +198,8 @@ class WayPoint():
 
         for pose in self.createdPath.poses:
 
+            self.goal_sent = True
+
             quat = Quaternion()
             quat.w = 1
 
@@ -196,19 +207,29 @@ class WayPoint():
 
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
+
             goal = MoveBaseGoal()
             goal.target_pose = pose
 
-            goalAction = MoveBaseActionGoal()
+            # goalAction = MoveBaseActionGoal()
 
-            goalAction.goal = goal
-            goalAction.header.frame_id = "map"
-            goalAction.header.stamp = rospy.Time.now()
+            # goalAction.goal = goal
+            # goalAction.header.frame_id = "map"
+            # goalAction.header.stamp = rospy.Time.now()
+            self.move_base.send_goal(goal)
 
-            self.move_base.send_goal_and_wait(goal)
-            print("SubGoal Reached")
+            # self.move_base.send_goal_and_wait(goal)
             
-        print("Final Goal reached!")
+            # Allow TurtleBot up to 60 seconds to complete task
+            success = self.move_base.wait_for_result(rospy.Duration(60)) 
+            state = self.move_base.get_state()
+            
+            if success and state == GoalStatus.SUCCEEDED:
+                # We made it!
+                result = True
+            else:
+                self.move_base.cancel_goal()
+
 
     def move_base_send_minigoals(self, data):
 
