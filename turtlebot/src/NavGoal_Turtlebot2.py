@@ -187,12 +187,13 @@ class WayPoint():
     def move_base_send_goals(self, data):
 
         for pose in self.createdPath.poses:
+
+            transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
+            pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             goal = MoveBaseGoal()
             goal.target_pose = pose
-            transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
-            goal = tf2_geometry_msgs.do_transform_pose(pose, transform)
-            goal.target_pose.header.frame_id = "map"
-            goal.target_pose.header.stamp = rospy.Time.now()
+            # goal.target_pose.header.frame_id = "map"
+            # goal.target_pose.header.stamp = rospy.Time.now()
 
             self.move_base.send_goal_and_wait(goal)
 
