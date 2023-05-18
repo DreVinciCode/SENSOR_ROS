@@ -198,15 +198,17 @@ class WayPoint():
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             goal = MoveBaseGoal()
             goal.target_pose = pose
-            # goal.header.frame_id = "map"
-            # goal.header.stamp = rospy.Time.now()
+
+            goalAction = MoveBaseActionGoal()
+
+            goalAction.goal = goal
+            goalAction.header.frame_id = "map"
+            goalAction.header.stamp = rospy.Time.now()
 
             self.move_base.send_goal_and_wait(goal)
             print("SubGoal Reached")
             
         print("Final Goal reached!")
-
-
 
     def move_base_send_minigoals(self, data):
 
