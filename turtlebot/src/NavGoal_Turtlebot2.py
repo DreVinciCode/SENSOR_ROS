@@ -189,22 +189,22 @@ class WayPoint():
     def move_base_send_goals(self, data):
 
         for path in self.paths:
+            for point in path:
+                goal = MoveBaseGoal()
+                goal.target_pose = point
+                goal.target_pose.header.frame_id = "map"
+                goal.target_pose.header.stamp = rospy.Time.now()
 
-            goal = MoveBaseGoal()
-            goal.target_pose = path
-            goal.target_pose.header.frame_id = "map"
-            goal.target_pose.header.stamp = rospy.Time.now()
 
+                self.move_base.send_goal(goal)
+                wait = self.move_base.wait_for_result()
 
-            self.move_base.send_goal(goal)
-            wait = self.move_base.wait_for_result()
+                if not wait:
+                    rospy.logerr("Action server not available!")
+                    rospy.signal_shutdown("Action server not available!")
 
-            if not wait:
-                rospy.logerr("Action server not available!")
-                rospy.signal_shutdown("Action server not available!")
-
-            else:
-                return self.move_base.get_result()
+                else:
+                    return self.move_base.get_result()
 
 
 
