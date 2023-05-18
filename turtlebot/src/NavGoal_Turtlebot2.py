@@ -219,18 +219,18 @@ class WayPoint():
 
             self.publishPoint.publish(point)
 
-            # goal = MoveBaseGoal()
-            # goal.target_pose = pose
+            goal = MoveBaseGoal()
+            goal.target_pose = pose
 
-            # self.move_base.send_goal(goal)
-            # success = self.move_base.wait_for_result(rospy.Duration(60)) 
-            # state = self.move_base.get_state()
+            self.move_base.send_goal(goal)
+            success = self.move_base.wait_for_result(rospy.Duration(60)) 
+            state = self.move_base.get_state()
             
-            # if success and state == GoalStatus.SUCCEEDED:
-            #     # We made it!
-            #     result = True
-            # else:
-            #     self.move_base.cancel_goal()
+            if success and state == GoalStatus.SUCCEEDED:
+                # We made it!
+                result = True
+            else:
+                self.move_base.cancel_goal()
 
 
     def move_base_send_minigoals(self, data):
