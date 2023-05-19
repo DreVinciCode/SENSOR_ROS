@@ -22,6 +22,8 @@ from math import atan2
 import tf2_ros
 import tf2_geometry_msgs
 
+import time
+
 def generate_pointstamped():
     return (Point(0.59, -0.57, 0.0), # A
     		Point(0.62, 0.53, 0.0), # B
@@ -55,7 +57,7 @@ class WayPoint():
         self.combined_path.header.frame_id = self.map_frame 
 
         self.createdPath = Path()
-        self.createdPath.header.frame_id = "base_link" 
+        self.createdPath.header.frame_id = "map" 
 
         self.createdPoseStampedArray = PoseStamped()
 
@@ -86,11 +88,15 @@ class WayPoint():
         self.click_point = rospy.Subscriber('clicked_point', PointStamped, self.clicked_point_callback )
 
         self.nav_waypoints = rospy.Subscriber('/NavWaypoints', Path, self.nav_waypoints_callback)
-
+        
         self.publishPoint = rospy.Publisher("/SENSAR/Points", PointStamped, queue_size=1)
-
+        
+        self.clearpath_pub = rospy.Subscriber("/SENSAR/clear", Empty, self.clearPaths)
+        
         self.execute_goal = rospy.Subscriber("/SENSAR/execute", Empty, self.move_base_send_goals)
-
+        
+        self.move_base_simple_goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=1)
+        self.move_base_action_goal_pub = rospy.Publisher("/move_base/goal", MoveBaseActionGoal, queue_size=1)
         rospy.spin()
 
     # def move_base_goal(self, path):
@@ -111,19 +117,31 @@ class WayPoint():
         rospy.loginfo("Stop")
         rospy.sleep(1)
 
-    def clearPaths(self):
+    def clearPaths(self, data):
         empty = Path()
         empty.header.frame_id = 'map'
         self.mainPlan.publish(empty)
-        # self.createdPath = Path()
-
 
     def nav_waypoints_callback(self, data):
         self.mainPlan.publish(data)
+        
+        new_poses = []
+        
+        for pose in data.poses:
 
-        self.createdPath = data
-        # self.create_waypoints(data)
+            self.goal_sent = True
 
+            quat = Quaternion()
+            quat.w = 1
+
+            pose.pose.orientation = quat
+
+            transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
+            pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
+            
+            new_poses.append(pose)
+         self.createdPath.poses = new_poses
+         
     def clicked_point_callback(self, data):
         self.WayPoints.append(data)
         print(len(self.WayPoints))
@@ -197,20 +215,9 @@ class WayPoint():
         self.mainPlan.publish(self.combined_path)
 
     def move_base_send_goals(self, data):
-
-        for pose in self.createdPath.poses:
-
-            self.goal_sent = True
-
-            quat = Quaternion()
-            quat.w = 1
-
-            pose.pose.orientation = quat
-
-            transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
-            pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
-            
-
+		
+		for pose in self.createdPath.poses:
+			
             point = PointStamped()
             point.header.frame_id = 'map'
             point.point.x = pose.pose.position.x
@@ -218,11 +225,21 @@ class WayPoint():
             point.point.z = pose.pose.position.z
 
             self.publishPoint.publish(point)
-
+            time.sleep(1)
+            
+           
+            #self.move_base_simple_goal_pub.publish(pose)
+            actionGoal = MoveBaseActionGoal()
+			
             goal = MoveBaseGoal()
             goal.target_pose = pose
 
-            self.move_base.send_goal(goal)
+            #self.move_base.send_goal_and_wait(goal)
+            actionGoal.goal = goal
+            
+            #self.move_base_action_goal_pub.publish(actionGoal)
+            #self.move_base.send_goal_and_wait(goal)
+
             success = self.move_base.wait_for_result(rospy.Duration(60)) 
             state = self.move_base.get_state()
             
@@ -230,7 +247,8 @@ class WayPoint():
                 # We made it!
                 result = True
             else:
-                self.move_base.cancel_goal()
+				pass
+                #self.move_base.cancel_goal()
 
 
     def move_base_send_minigoals(self, data):

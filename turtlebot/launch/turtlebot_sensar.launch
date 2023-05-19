@@ -7,11 +7,8 @@
 
 	<include file="$(find turtlebot_dashboard)/launch/turtlebot_dashboard.launch"/>
 
-	<node name="sensar_nav2" pkg="sensar_ros" type="NavGoal_Turtlebot2.py"/>
+	<!-- <node name="sensar_nav2" pkg="sensar_ros" type="NavGoal_Turtlebot2.py"/> -->
 
-  	<node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" respawn="false" output="screen" args="/camera/rgb/image_raw">
-		<remap from="image" to="/camera/rgb/image_raw"/>
- 	</node>
 
   	<!-- <include file="$(find sensar_ros)/launch/includes/move_base.launch.xml"/> -->
 
