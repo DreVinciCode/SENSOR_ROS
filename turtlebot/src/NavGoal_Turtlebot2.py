@@ -133,14 +133,11 @@ class WayPoint():
 
             self.goal_sent = True
             
-
             # quat = Quaternion()
             # quat.w = 1
             # pose.pose.orientation = quat
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
-            pose.pose.orientation.z = 0.0
-            pose.pose.orientation.w = 1.0
             new_poses.append(pose)
         
         self.createdPath.poses = new_poses

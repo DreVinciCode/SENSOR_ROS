@@ -6,13 +6,14 @@ move_base:
     # max_vel_x: 0.17  # 0.55
     # acc_lim_x: 1.0
     xy_goal_tolerance: 0.1  # 0.10
+    yaw_goal_tolerance: 6
   
-  local_costmap:
-    inflation_layer:
-      cost_scaling_factor: 1.0
-      inflation_radius: 1.0
+  # local_costmap:
+  #   inflation_layer:
+  #     cost_scaling_factor: 1.0
+  #     inflation_radius: 1.0
   
-  planner_frequency: 0.0
+  # planner_frequency: 0.0
   # max_planning_retries: -1
 
 # navigation_velocity_smoother:
