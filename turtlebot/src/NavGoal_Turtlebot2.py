@@ -221,7 +221,7 @@ class WayPoint():
         for pose in self.createdPath.poses:
 			
             current_pose = self.getAmcl_Pose()
-            pose.pose.orientation = current_pose.pose.orientation
+            pose.pose.orientation = current_pose.pose.pose.orientation
 
             point = PointStamped()
             point.header.frame_id = 'map'
