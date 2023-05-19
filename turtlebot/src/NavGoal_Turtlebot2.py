@@ -133,9 +133,9 @@ class WayPoint():
 
             self.goal_sent = True
 
-            quat = Quaternion()
-            quat.w = 1
-            pose.pose.orientation = quat
+            # quat = Quaternion()
+            # quat.w = 1
+            # pose.pose.orientation = quat
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             
@@ -226,19 +226,10 @@ class WayPoint():
             point.point.z = pose.pose.position.z
 
             self.publishPoint.publish(point)
-            time.sleep(1)
-            
-           
-            #self.move_base_simple_goal_pub.publish(pose)
-            actionGoal = MoveBaseActionGoal()
-			
+            time.sleep(0.1)
+            		
             goal = MoveBaseGoal()
             goal.target_pose = pose
-
-            #self.move_base.send_goal_and_wait(goal)
-            actionGoal.goal = goal
-            
-            #self.move_base_action_goal_pub.publish(actionGoal)
             self.move_base.send_goal_and_wait(goal)
             success = self.move_base.wait_for_result(rospy.Duration(60)) 
             state = self.move_base.get_state()
@@ -247,8 +238,7 @@ class WayPoint():
                 # We made it!
                 result = True
             else:
-                pass
-                #self.move_base.cancel_goal()
+                self.move_base.cancel_goal()
 
     def move_base_send_minigoals(self, data):
 
