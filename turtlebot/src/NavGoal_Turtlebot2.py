@@ -132,10 +132,12 @@ class WayPoint():
         for pose in data.poses:
 
             self.goal_sent = True
+            
 
             # quat = Quaternion()
             # quat.w = 1
             # pose.pose.orientation = quat
+            pose.pose.orientation.z = 0.0
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             
@@ -226,7 +228,7 @@ class WayPoint():
             point.point.z = pose.pose.position.z
 
             self.publishPoint.publish(point)
-            time.sleep(0.1)
+            time.sleep(1)
             		
             goal = MoveBaseGoal()
             goal.target_pose = pose
