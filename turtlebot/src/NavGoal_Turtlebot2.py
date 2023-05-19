@@ -140,6 +140,7 @@ class WayPoint():
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             pose.pose.orientation.z = 0.0
+            pose.pose.orientation.w = 1.0
             new_poses.append(pose)
         
         self.createdPath.poses = new_poses
@@ -220,8 +221,9 @@ class WayPoint():
         
         for pose in self.createdPath.poses:
 			
-            current_pose = self.getAmcl_Pose()
-            pose.pose.orientation = current_pose.pose.pose.orientation
+            # current_pose = self.getAmcl_Pose()
+            # pose.pose.orientation = current_pose.pose.orient
+
 
             point = PointStamped()
             point.header.frame_id = 'map'
