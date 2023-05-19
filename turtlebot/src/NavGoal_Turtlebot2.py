@@ -96,7 +96,9 @@ class WayPoint():
         self.execute_goal = rospy.Subscriber("/SENSAR/execute", Empty, self.move_base_send_goals)
         
         self.move_base_simple_goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=1)
+        
         self.move_base_action_goal_pub = rospy.Publisher("/move_base/goal", MoveBaseActionGoal, queue_size=1)
+        
         rospy.spin()
 
     # def move_base_goal(self, path):
@@ -133,14 +135,13 @@ class WayPoint():
 
             quat = Quaternion()
             quat.w = 1
-
             pose.pose.orientation = quat
-
             transform = self.tfBuffer.lookup_transform("map", "base_link", rospy.Time(0), rospy.Duration(0.2))
             pose = tf2_geometry_msgs.do_transform_pose(pose, transform)
             
             new_poses.append(pose)
-         self.createdPath.poses = new_poses
+        
+        self.createdPath.poses = new_poses
          
     def clicked_point_callback(self, data):
         self.WayPoints.append(data)
@@ -215,8 +216,8 @@ class WayPoint():
         self.mainPlan.publish(self.combined_path)
 
     def move_base_send_goals(self, data):
-		
-		for pose in self.createdPath.poses:
+        
+        for pose in self.createdPath.poses:
 			
             point = PointStamped()
             point.header.frame_id = 'map'
@@ -238,8 +239,7 @@ class WayPoint():
             actionGoal.goal = goal
             
             #self.move_base_action_goal_pub.publish(actionGoal)
-            #self.move_base.send_goal_and_wait(goal)
-
+            self.move_base.send_goal_and_wait(goal)
             success = self.move_base.wait_for_result(rospy.Duration(60)) 
             state = self.move_base.get_state()
             
@@ -247,9 +247,8 @@ class WayPoint():
                 # We made it!
                 result = True
             else:
-				pass
+                pass
                 #self.move_base.cancel_goal()
-
 
     def move_base_send_minigoals(self, data):
 
